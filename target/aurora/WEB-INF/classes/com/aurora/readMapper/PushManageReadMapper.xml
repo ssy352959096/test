@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="PushManageReadMapper">
+
+ <!-- SSY 条件查询到货提醒     *** 商品列表 -->
+	<select id="getPushArrival" resultType="pd" parameterType="page">
+		SELECT
+		p.*,c.goods_name,c.brand_name
+		FROM
+		aurorascm.push_arrival p
+		INNER JOIN
+		aurorascm.goods_common c
+		ON 
+		p.goods_id = c.goods_id
+		WHERE 1=1
+		<if test="pd.goodsID !=null">
+		AND c.goods_id = #{pd.goodsID}
+		 </if>
+		<if test="pd.category1ID !=null">
+		AND c.category1_id = #{pd.category1ID}
+		 </if> 
+		 <if test="pd.push !=null">
+		AND p.push_state = #{pd.pushState}
+		 </if> 
+		ORDER BY 
+		p.oos_time DESC
+		LIMIT 
+		#{fromIndex}, #{pageSize}
+	</select>
+	
+	
+ <!-- SSY 条件查询到货提醒     *** 商品总数 -->
+<select id="getNumPushArrival" resultType="int" parameterType="page">
+		SELECT
+		count(p.id) num
+		FROM
+		aurorascm.push_arrival p
+		INNER JOIN
+		aurorascm.goods_common c
+		ON 
+		p.goods_id = c.goods_id
+		WHERE 1=1
+		<if test="pd.goodsID !=null">
+		AND c.goods_id = #{pd.goodsID}
+		 </if>
+		<if test="pd.category1ID !=null">
+		AND c.category1_id = #{pd.category1ID}
+		 </if> 
+		 <if test="pd.push !=null">
+		AND p.push_state = #{pd.pushState}
+		 </if> 
+	</select>
+</mapper>

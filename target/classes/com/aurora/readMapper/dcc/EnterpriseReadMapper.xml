@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="EnterpriseReadMapper">
+
+	<resultMap type="com.aurora.entity.dcc.Enterprise"
+		id="EnterpriseInFo">
+		<id column="enterprise_id" property="enterpriseId" />
+		<result column="enterprise_name" property="enterpriseName" />
+		<result column="advantage_brand" property="advantageBrand" />
+		<result column="product_subclass" property="productSubclass" />
+		<result column="account_period_star" property="accountPeriodStar" />
+		<result column="account_period_end" property="accountPeriodEnd" />
+		<result column="currency" property="currency" />
+		<result column="trand_mode" property="trandMode" />
+		<result column="cooperation_degree" property="cooperationDegree" />
+		<result column="country" property="country" />
+		<result column="region" property="region" />
+		<result column="street" property="street" />
+		<result column="purchase_user" property="purchaseUser" />
+		<result column="update_time" property="updateTime" />
+		<result column="update_name" property="updateName" />
+	</resultMap>
+	<!-- 字段 -->
+	<sql id="EnterpriseField">
+		enterprise_id,
+		enterprise_name,
+		advantage_brand,
+		product_subclass,
+		account_period_star,
+		account_period_end,
+		currency,
+		trand_mode,
+		cooperation_degree,
+		country,
+		region,
+		street,
+		purchase_user,
+		update_time,
+		update_name
+	</sql>
+	<!-- 字段值 -->
+	<sql id="EnterpriseFieldValue">
+		#{enterpriseId},
+		#{enterpriseName},
+		#{advantageBrand},
+		#{productSubclass},
+		#{accountPeriodStar},
+		#{accountPeriodEnd},
+		#{currency},
+		#{trandMode},
+		#{cooperationDegree},
+		#{country},
+		#{region},
+		#{street},
+		#{purchaseUser},
+		#{updateTime},
+		#{updateName}
+
+	</sql>
+
+<!--@author KJH @date 2018年6月26日 下午12:48:25 查询企业信息 -->
+	<select id="searEnterPriseInFo" parameterType="com.aurora.entity.dcc.Enterprise" resultMap="EnterpriseInFo">
+		SELECT
+		<include refid="EnterpriseField"></include>
+		FROM dcc.enterprise_info
+		WHERE enterprise_name=#{enterpriseName}
+	</select>
+
+
+
+
+
+
+
+
+</mapper>

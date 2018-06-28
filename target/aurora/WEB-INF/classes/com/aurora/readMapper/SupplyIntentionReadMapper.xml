@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SupplyIntentionReadMapper">
+	 
+	 <resultMap type="com.aurora.entity.supply.intention.SupplyIntention" id="SupplyIntentionResultMap">
+		<id column="id" property="id"/>
+		<result column="customer_id" property="customerID"/>
+		<result column="company_name" property="companyName"/>
+		<result column="contacts" property="contacts"/>
+		<result column="phone" property="phone"/>
+		<result column="advantage_brand" property="advantageBrand"/>
+		<result column="chain_path" property="chainPath"/>
+		<result column="input_time" property="inputTime"/>
+		<result column="convenient_time" property="convenientTime"/>
+	</resultMap>
+	
+	
+	 <resultMap type="com.aurora.entity.supply.intention.SupplyGoodsIntention" id="SupplyGoodsIntentionResultMap">
+		<id column="id" property="id"/>
+		<result column="goods_id" property="goodsID"/>
+		<result column="goods_name" property="goodsName"/>
+		<result column="phone" property="phone"/>
+		<result column="contacts" property="contacts"/>
+		<result column="delivery_type" property="deliveryType"/>
+		<result column="price" property="price"/>
+		<result column="input_time" property="inputTime"/>
+		<result column="convenient_time" property="convenientTime"/>
+	</resultMap>
+	 
+	 
+	<!-- @author SSY 2018-05-04  查询全站供货意向信息 -->
+	<select id="getSupplyIntentionList" parameterType="page" resultMap="SupplyIntentionResultMap">
+		SELECT 
+			*
+		FROM
+			aurorascm.supply_intention
+		WHERE 1=1
+		<if test="t.endInputTime!=null"> 
+		AND
+			input_time &lt;= #{t.endInputTime}
+			</if>
+			<if test="t.endInputTime!=null">
+		AND
+			input_time &gt;= #{t.beginInputTime}
+			</if>
+		ORDER BY 
+			input_time DESC
+		LIMIT
+			#{fromIndex}, #{pageSize}
+	</select>
+	
+		<!-- @author SSY 2018-05-04  查询全站供货意向信息shuliang-->
+	<select id="getSupplyIntentionNum" parameterType="page" resultType="int">
+		SELECT 
+			count(id)
+		FROM
+			aurorascm.supply_intention
+		WHERE 1=1
+		<if test="t.endInputTime!=null"> 
+		AND
+			input_time &lt;= #{t.endInputTime}
+			</if>
+			<if test="t.endInputTime!=null">
+		AND
+			input_time &gt;= #{t.beginInputTime}
+			</if>
+	</select>
+	
+	
+	
+	<!-- @author SSY 2018-05-04  查询单个商品供货意向信息 -->
+	<select id="getSupplyGoodsIntentionList" parameterType="page" resultMap="SupplyGoodsIntentionResultMap">
+		SELECT 
+			*
+		FROM
+			aurorascm.supply_goods_intention
+		WHERE 1=1
+		<if test="t.endInputTime!=null"> 
+		AND
+			input_time &lt;= #{t.endInputTime}
+			</if>
+			<if test="t.endInputTime!=null">
+		AND
+			input_time &gt;= #{t.beginInputTime}
+			</if>
+		ORDER BY 
+			input_time DESC
+		LIMIT
+			#{fromIndex}, #{pageSize}
+	</select>
+	
+		<!-- @author SSY 2018-05-04  查询单个商品供货意向信息数量 -->
+	<select id="getSupplyGoodsIntentionNum" parameterType="page" resultType="int">
+		SELECT 
+			count(id)
+		FROM
+			aurorascm.supply_goods_intention
+		WHERE 1=1
+		<if test="t.endInputTime!=null"> 
+		AND
+			input_time &lt;= #{t.endInputTime}
+			</if>
+			<if test="t.endInputTime!=null">
+		AND
+			input_time &gt;= #{t.beginInputTime}
+			</if>
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

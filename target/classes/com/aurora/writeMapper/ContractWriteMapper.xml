@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ContractWriteMapper">
+
+	<!-- @author SSY 2018-1-9 更新合同采购单  (合同上传文件/价格/状态等)-->
+	<update id="updateContractFile" parameterType="pd">
+		UPDATE
+			aurorascm.contract_manage
+		SET
+			contract_state = 2,
+			contract_file = #{contractFile},
+			upload_operator = #{uploadOperator},
+			upload_time = #{uploadTime}
+		WHERE
+			contract_id = #{contractID}
+	</update>
+ 
+	<!-- @author SSY 2018-1-9  确认合同已经线下付款,更改合同状态-->
+	<update id="updatePayStateContract" parameterType="String">
+		UPDATE 
+			aurorascm.contract_manage 
+		SET
+			pay_path = '4',
+			trade_no = '线下付款',
+			pay_money = contract_money,
+			contract_state = 4,
+			pay_time = NOW()
+		WHERE
+			contract_id = #{contractID}
+	</update>
+
+
+	<!-- @author SSY 2018-1-9  合同失效  -->
+	<update id="updateInvalidContract" parameterType="String">
+		UPDATE 
+			aurorascm.contract_manage 
+		SET
+			contract_state = 5 
+		WHERE
+			contract_id = #{contractID}
+	</update>
+
+	<!-- @author SSY 2018-1-9 保存合同 -->  
+	<insert id="addContract" parameterType="com.aurora.entity.ContractManage">
+		INSERT INTO
+			aurorascm.contract_manage 
+			(contract_id,source_id,inquiry_id,sales_manager,contract_money,total_postage,
+			create_time,customer_id,customer_name,customer_email,customer_mobile,company,address)
+		VALUES
+			(#{contractID}, #{sourceID}, #{inquiryID}, #{salesManager}, #{contractMoney}, #{totalPostage},
+			#{createTime}, #{customerID}, #{customerName}, #{customerEmail}, #{customerMobile}, #{company}, #{address})
+	</insert>
+	
+	<!-- @author SSY 2018-1-9 保存合同商品 -->  
+	<insert id="addContractGoods" parameterType="com.aurora.entity.ContractGoods">
+		INSERT INTO
+			aurorascm.contract_goods
+			(contract_id,goods_name,goods_code,goods_brand,goods_norm,goods_num,
+			goods_map,deliver_country,deliver_city,trade_type,ready_time,logistics_type,
+			volume,pallet_volume,pallet_price,postage,goods_price,supply_price,currency_sign,currency_name,valid_time)
+		VALUES
+		<foreach collection="list" index="item" item="item" separator=",">
+			(#{item.contractID},#{item.goodsName},#{item.goodsCode},#{item.goodsBrand},#{item.goodsNorm},#{item.goodsNum},#{item.goodsMap},
+			#{item.deliverCountry},#{item.deliverCity},#{item.tradeType},#{item.readyTime},#{item.logisticsType},#{item.volume},#{item.palletVolume},
+			#{item.palletPrice},#{item.postage},#{item.goodsPrice},#{item.supplyPrice},#{item.currencySign},#{item.currencyName},#{item.validTime})
+		</foreach>
+	</insert>
+	
+	
+	<!-- ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ -->
+	<!-- **************************************我是分割线******************************************* -->
+	<!-- ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ -->
+
+
+</mapper>

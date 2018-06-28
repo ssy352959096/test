@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="InquiryWriteMapper">
+
+	<!-- @author SSY 2018-01-08  更新商品询价报价 -->
+	<update id="updateInquiryGoods" parameterType="com.aurora.entity.InquiryGoods">
+		UPDATE
+			aurorascm.inquiry_goods
+		SET
+		<if test="inquiryGoodsState !=null and inquiryGoodsState == 3">
+			inquiry_goods_state = 3,
+			pallet_volume = NULL,
+			pallet_price = NULL,
+			goods_price = NULL,
+			volume = NULL,
+			ready_time = NULL,
+			supply_price = NULL,
+			postage = NULL,
+			valid_time = '',
+		</if>
+		<if test="inquiryGoodsState !=null and inquiryGoodsState == 2">
+			inquiry_goods_state = 2,
+			trade_type = #{tradeType},
+			logistics_type = #{logisticsType},
+			goods_code = #{goodsCode},
+			deliver_country = #{deliverCountry},
+			deliver_city = #{deliverCity},
+			ready_time = #{readyTime},
+			supply_price = #{supplyPrice},
+			postage = #{postage},
+			currency_sign = #{currencySign},
+			currency_name = #{currencyName},
+			pallet_volume = #{palletVolume},
+			pallet_price = #{palletPrice},
+			goods_price = #{goodsPrice},
+			volume = #{volume},
+			update_num = #{updateNum},
+			valid_time = #{validTime},
+		</if>
+			inputor = #{inputor},
+			input_time = #{inputTime}
+		WHERE
+			inquiry_id = #{inquiryID}
+		AND
+			inquiry_goods_id = #{inquiryGoodsID}
+	</update>
+
+
+	<!-- @author SSY 2018-01-08 提交询价单 -->
+	<update id="updateInquriyState" parameterType="com.aurora.entity.InquiryManage">
+		UPDATE
+			aurorascm.inquiry_sheet
+		SET
+		 	offerer = #{offerer},
+		 	offer_time = #{offerTime},
+		 	inquiry_state = #{inquiryState}
+		WHERE
+			inquiry_id = #{inquiryID}
+		<if test="salesManager!=null">
+			AND sales_manager = #{salesManager}
+		</if>	
+	</update>
+
+
+	<!-- @author SSY 2018-01-23  检查询价商品有效性 -->
+	<update id="updateInquriyGoodsValidity" >
+		UPDATE
+			aurorascm.inquiry_goods
+		SET
+		 	inquiry_goods_state = 4
+		WHERE
+			valid_time &lt; NOW()
+	</update>
+</mapper>

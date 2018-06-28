@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OrderWriteMapper">
+
+	<!-- 根据订单ID关闭或恢复订单 -->
+	<update id="updateOrderShut" parameterType="pd">
+		UPDATE
+		aurorascm.order_manage
+		SET
+		<if test="orderStateNew=='9'.toString()"><!-- 关闭 -->
+			order_old_state = #{orderStateNow},
+			order_state = #{orderStateNew},
+			cancel_order_time = #{time},
+			cancel_order_operator = #{operator},
+			aurora_remark = CONCAT(aurora_remark,'关闭原因:'),
+			operate_state = 2,
+		</if>
+		<if test="orderStateNew!='9'.toString() and orderStateNow=='9'.toString()"><!-- 恢复 -->
+			order_state = order_old_state,
+			recover_order_time = #{time},
+			recover_order_operator = #{operator},
+			aurora_remark =
+			CONCAT(aurora_remark,'恢复理由:'),
+			operate_state = 1,
+		</if>
+		aurora_remark = CONCAT(aurora_remark,#{remark})
+		WHERE
+		order_id =
+		#{orderID}
+	</update>
+
+	<!-- 根据订单ID更新单个订单备注 -->
+	<update id="updateRemark" parameterType="pd">
+		UPDATE
+		aurorascm.order_manage
+		SET
+		aurora_remark =
+		CONCAT(aurora_remark,#{remark})
+		WHERE
+		order_id = #{orderID}
+	</update>
+
+	<!--@author SSY 根据订单ID更新订单北极光接单操作时间以及订单状态 -->
+
+	<update id="updateReceivingOperate" parameterType="pd">
+		UPDATE
+			aurorascm.order_manage
+		SET
+			order_state = #{orderState},
+			take_order_operator = #{takeOrderOperator},
+			take_order_time =	#{takeOrderTime}
+		WHERE
+			order_id = #{orderID}
+	</update>
+
+	<!--@author SSY 根据订单ID更新订单北极光退款操作时间以及订单状态 -->
+
+	<update id="updateRefundOperate" parameterType="pd">
+		UPDATE
+		aurorascm.order_manage
+		SET
+		order_state = #{orderState},
+		refund_operator =
+		#{refundOperator},
+		refund_time = #{refundTime}
+		WHERE
+		order_id =
+		#{orderID}
+	</update>
+
+	<!--@author SSY 根据订单ID和商品id更新发货信息 物流信息; -->
+
+	<update id="updateLogistics" parameterType="pd">
+		UPDATE
+		aurorascm.order_goods
+		SET
+		<if test="logisticsName!=null and logisticsName!=''">
+			logistics_type = 1,
+			logistics_company = #{logisticsName},
+			logistics_number = #{logisticsNum},
+			logistics_company_code = #{logisticsCode},
+			logistics_operator = #{sendOperator},
+			logistics_time = #{sendTime},
+		</if>
+		<if test="logisticsName ==null or logisticsName==''"><!-- 不需要物流 -->
+			logistics_type = 2,
+			logistics_company = '',
+			logistics_number = '',
+			logistics_company_code = '',
+			logistics_operator = #{sendOperator},
+			logistics_time = #{sendTime},
+		</if>
+			send_operator = #{sendOperator},
+			send_time = #{sendTime}
+		WHERE
+		order_id = #{orderID}
+		AND
+		goods_id = #{goodsID}
+	</update>
+
+	<!--@author SSY 根据订单ID更新订单发货状态以及发货时间 -->
+
+	<update id="updateSendGoodsOperate" parameterType="pd">
+		UPDATE
+		aurorascm.order_manage
+		SET
+		order_state = #{orderState},
+		send_operator = #{sendOperator},
+		send_time = #{sendTime}
+		WHERE
+		order_id = #{orderID}
+	</update>
+
+	<!--@author SSY 根据订单ID更新订单退款状态以及退款时间-操作者 -->
+	<update id="batchRefund" parameterType="pd">
+		UPDATE
+		aurorascm.order_manage
+		SET
+		refund_time = #{operateTime},
+		refund_operator = #{operator},
+		order_state = 5,
+		order_old_state = 4
+		WHERE
+		order_id IN
+		<foreach collection="orderIDList" item="item" index="index"
+			open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+		AND order_state = 4
+	</update>
+
+	<!-- BYG 添加微仓订单商品到客户微仓 -->
+	<insert id="addMWGoods" parameterType="pd">
+		INSERT INTO aurorascm.mw_goods (
+			customer_id,
+			order_id,
+			goods_id,
+			goods_name,
+			goods_code,
+			buy_num,
+			goods_num,
+			cost_price,
+			goods_price,
+			goods_map,
+			goods_weight,
+			deposit,
+			pay_type,
+			trade_type,
+			postage_style,
+			free_day,
+			join_mw_time
+		)VALUES	
+			<foreach collection="orderGoods" item="item" index="index" separator="," >
+				(
+				#{item.customer_id},
+				#{orderID},
+				#{item.goods_id},
+				#{item.goods_name},
+				#{item.goods_code},
+				#{item.goods_num},
+				#{item.goods_num},
+				#{item.cost_price}/#{item.goods_num},
+				#{item.goods_price},
+				#{item.goods_map},
+				#{item.goods_weight},
+				#{item.deposit},
+				#{item.pay_type},
+				#{item.trade_type},
+				#{item.postage_style},
+				30,
+				#{time}
+				)
+			</foreach> 
+	</insert>
+
+<!--@author SSY 根据订单id,商品id修改订单商品的总成本; -->
+	<update id="updateOGoodsCostByID" parameterType="pd">
+		UPDATE
+			aurorascm.order_goods
+		SET
+			 cost_price = #{costPrice}
+		WHERE
+			 goods_id = #{goods_id}
+		AND 
+			order_id = #{order_id}
+	</update>
+
+<!--@author SSY 根据订单id,修改订单总成本; -->
+	<update id="updateOrderCostByID" parameterType="pd">
+		UPDATE
+			aurorascm.order_manage
+		SET
+			 cost = #{orderCost}
+		WHERE
+			order_id = #{orderID}
+	</update>
+
+<!--@author SSY 接单之前修改海外直邮的总成本 -->
+	<update id="updateOHGCost" parameterType="map">
+		UPDATE
+			aurorascm.order_goods
+		SET 	
+			cost_price = #{costPrice}
+			  
+			WHERE
+				goods_id = #{goodsID}
+			AND
+				order_id = #{orderID}
+	</update>
+
+	<!--@author SSY 根据订单ID更新订单退款状态以及退款时间-操作者 -->
+	<update id="updateOrderReceipt" parameterType="pd">
+		UPDATE
+			aurorascm.order_manage
+		SET
+			finish_time = #{time},
+			finish_operator = #{operator},
+			order_state = 8 
+		WHERE
+			order_id = #{orderID}
+	</update>
+
+ 
+	<!--@author SSY 2018-06-23  两小时未付款订单自动关闭  -->
+	<update id="updateOrderAutoShut"  parameterType="pd">
+		UPDATE
+			aurorascm.order_manage
+		SET
+			order_state = 10,
+			cancel_order_time = #{time},
+			cancel_order_operator = #{operator}
+		WHERE
+			order_state = 1
+		AND
+			TIMESTAMPDIFF(HOUR,order_time,NOW()) &gt;= 2
+	</update>
+	
+</mapper>

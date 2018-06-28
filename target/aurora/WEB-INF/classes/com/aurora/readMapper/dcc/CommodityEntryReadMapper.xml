@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CommodityEntryReadMapper">
+
+	<resultMap type="com.aurora.entity.dcc.CommodityEntry"
+		id="BrandSmallClassSetting">
+		<id column="commodity_id" property="commodityId" />
+		<result column="brand_name" property="brandName" />
+		<result column="small_class_name" property="smallClassName" />
+		<result column="provenance" property="provenance" />
+		<result column="commodity_name" property="commodityName" />
+		<result column="company" property="company" />
+		<result column="SPEC" property="SPEC" />
+		<result column="EAN" property="EAN" />
+		<result column="major_supplier" property="majorSupplier" />
+		<result column="category_attribution" property="categoryAttribution" />
+		<result column="regulations" property="regulations" />
+		<result column="gage" property="gage" />
+		<result column="phone_url1" property="phoneUrl1" />
+		<result column="phone_url2" property="phoneUrl2" />
+		<result column="phone_url3" property="phoneUrl3" />
+		<result column="phone_url4" property="phoneUrl4" />
+		<result column="phone_url5" property="phoneUrl5" />
+		<result column="maintain_user" property="maintainUser" />
+		<result column="update_name" property="updateName" />
+		<result column="update_time" property="updateTime" />
+		
+	</resultMap>
+
+	<!-- 字段 -->
+	<sql id="CEfield">
+		commodity_id,
+		brand_name,
+		small_class_name,
+		commodity_name,
+		provenance,
+		company,
+		SPEC,
+		EAN,
+		major_supplier,
+		category_attribution,
+		regulations,
+		gage,
+		phone_url1,
+		phone_url2,
+		phone_url3,
+		phone_url4,
+		phone_url5,
+		maintain_user,
+		update_time,
+		update_name
+	</sql>
+	<!-- 字段值 -->
+	<sql id="CEfieldValue">
+		#{commodityId},
+		#{brandName},
+		#{smallClassName},
+		#{commodityName},
+		#{provenance},
+		#{company},
+		#{SPEC},
+		#{EAN},
+		#{majorSupplier},
+		#{categoryAttribution},
+		#{regulations},
+		#{gage},
+		#{phoneUrl1},
+		#{phoneUrl2},
+		#{phoneUrl3},
+		#{phoneUrl4},
+		#{phoneUrl5},
+		#{maintainUser},
+		#{updateTime},
+		#{updateName}
+	</sql>
+	
+</mapper>

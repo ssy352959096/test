@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="HomeCountriesGoodsWriteMapper">
+ 
+	<!--@author BYG 2018-5-2  新增标题-->
+    <insert id="addTitle" parameterType="com.aurora.entity.home.HomeCountriesGoods">
+    	INSERT INTO  aurorascm.home_countries_goods
+    				(title_id,title_name,type,operator,update_time)
+    	VALUES		(#{titleID},#{titleName},#{type},#{operator},#{updateTime})
+    </insert>
+         
+    <!--@author BYG 2018-5-2  更新标题 -->
+    <update id="updateTitle" parameterType="com.aurora.entity.home.HomeCountriesGoods">
+    	UPDATE		aurorascm.home_countries_goods
+    	SET   		title_name = #{titleName}
+    	WHERE		title_id = #{titleID}
+    </update>
+    
+    <!--@author BYG 2018-5-2  更新banner图 -->
+    <update id="updateBanner" parameterType="com.aurora.entity.home.HomeCountriesGoods">
+    	UPDATE		aurorascm.home_countries_goods
+    	SET    		operator = #{operator},
+    				update_time = #{updateTime},
+					banner = #{banner}
+    	WHERE		title_id = #{titleID}
+		AND			type = #{type}
+    </update>
+    
+     <!--@author BYG 2018-5-2  更新商品 -->
+    <update id="updateGoods" parameterType="com.aurora.entity.home.HomeCountriesGoods">
+    	UPDATE		aurorascm.home_countries_goods
+    	SET    		goods_id = #{goodsID},
+			    	goods_show_name = #{goodsShowName},
+			    	goods_show_map = #{goodsShowMap},
+    				operator = #{operator},
+    				update_time = #{updateTime}
+    	WHERE		title_id = #{titleID}
+		AND			seat = #{seat}
+		AND			type = #{type}
+    </update>
+    
+    <!--@author BYG 2018-5-2  新增商品-->
+    <insert id="addGoods" parameterType="com.aurora.entity.home.HomeCountriesGoods">
+    	INSERT INTO  aurorascm.home_countries_goods
+    				(title_id,title_name,type,seat,goods_id,goods_show_name,goods_show_map,operator,update_time)
+    	VALUES		(#{titleID},#{titleName},#{type},#{seat},#{goodsID},#{goodsShowName},#{goodsShowMap},#{operator},#{updateTime})
+    </insert>
+    
+    <!-- @author BYG 2018-5-2  根据ID删除商品  -->
+	<delete id="deleteGoods" parameterType="int">
+		DELETE FROM		aurorascm.home_countries_goods
+		WHERE			id=#{id}
+	</delete>
+</mapper>

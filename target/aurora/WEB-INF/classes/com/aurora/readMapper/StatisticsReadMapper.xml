@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="StatisticsReadMapper">
+
+ <!-- 条件查询商城客户列表; -->
+	<select id="getCustomerByCondition" parameterType="page" resultType="pd">
+	 SELECT 
+	 	*
+	 FROM 
+	 	aurorascm.sys_customer
+	WHERE 1=1 
+		<if test="pd.buyNum!=null">
+		AND buy_num &gt;= #{pd.buyNum}
+		</if>
+		<if test="pd.buyMoney!=null">
+		AND buy_money &gt;= #{pd.buyMoney}
+		</if>
+		<if test="pd.register!=null">
+		AND register = #{pd.register}
+		</if>
+		<if test="pd.push!=null">
+		AND (  
+				 sms_push = 1 
+			OR
+				 email_push = 1
+			 )
+		</if>
+		<if test="pd.keywords!=null">
+		AND
+			(  
+				 customer_mobile LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+			OR
+				 customer_name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+			OR
+				 customer_email LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+		 )
+		</if>
+		LIMIT 
+			#{fromIndex}, #{pageSize}
+	</select>
+	
+ <!-- 条件查询商城客户数量; -->
+	<select id="getCustomerNumByCondition" parameterType="page" resultType="int">
+	 SELECT 
+	 	count(customer_id) num
+	 FROM 
+	 	aurorascm.sys_customer
+	WHERE 1=1 
+		<if test="pd.buyNum =='1'.toString()">
+		AND buy_num &lt;= 5
+		</if>
+		<if test="pd.buyNum =='2'.toString()">
+		AND buy_num &gt; 5
+		OR buy_num &lt;= 20
+		</if>
+		<if test="pd.buyNum =='3'.toString()">
+		AND buy_num &gt; 20
+		OR buy_num &lt;= 50
+		</if>
+		<if test="pd.buyNum =='4'.toString()">
+		AND buy_num &gt; 50
+		</if>
+		<if test="pd.buyMoney =='1'.toString() ">
+		AND buy_money &gt;= #{pd.buyMoney}
+		</if>
+		<if test="pd.register!=null">
+		AND register = #{pd.register}
+		</if>
+		<if test="pd.push!=null">
+		AND (  
+				 sms_push = 1 
+			OR
+				 email_push = 1
+			 )
+		</if>
+		<if test="pd.keywords!=null">
+		AND
+			(  
+				 customer_mobile LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+			OR
+				 customer_name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+			OR
+				 customer_email LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+		 )
+		</if>
+	</select>	
+	
+
+	
+	<!-- 根据日期统计成交订单数量 -->
+	<select id="getSOrderNumByDate" parameterType="String" resultType="int">
+	 SELECT 
+	 	count(order_id) num
+	 FROM 
+	 	aurorascm.order_manage
+	WHERE  
+		 order_state = 6
+	AND 
+		take_order_time LIKE CONCAT(#{date},'%')
+	</select>
+	
+	<!-- 根据日期统计成交订单成交金额 -->
+	<select id="getSOrderMuchByDate" parameterType="String" resultType="String">
+	 SELECT 
+	 	SUM(should_payment + postage) money
+	 FROM 
+	 	aurorascm.order_manage
+	WHERE  
+		 order_state = 6
+	AND 
+		take_order_time LIKE CONCAT(#{date},'%')
+	</select>
+	
+	<!-- 根据日期统计利润,接单状态 -->
+	<select id="getProfitByDate" parameterType="String" resultType="String">
+	 SELECT 
+	  	SUM(pay_money - cost - postage) as profit
+	 FROM 
+	 	aurorascm.order_manage
+	WHERE  
+		 order_state IN (6,7,8)
+	AND 
+		take_order_time LIKE CONCAT(#{date},'%')
+	</select>
+	
+	<!-- 根据日期统计网站访问数量 -->
+<select id="getWPVByDate" parameterType="String" resultType="int">
+	 SELECT 
+	 	SUM(browsing_count) num
+	 FROM 
+	 	aurorascm.data_web_browsing
+	WHERE  
+		 browsing_time LIKE CONCAT(#{date},'%')
+	</select>
+	
+	<!-- 根据时间统计询价数量; -->
+<select id="getInquiryNumByDate" parameterType="String" resultType="int">
+	 SELECT 
+	 	count(inquiry_id) num
+	 FROM 
+	 	aurorascm.inquiry_sheet
+	WHERE  
+		inquiry_time LIKE CONCAT(#{date},'%')
+	</select>	
+	
+		<!-- 根据时间统计所有状态合同数量;-->
+<select id="getContractNumByDate" parameterType="String" resultType="int">
+	 SELECT 
+	 	count(contract_id) num
+	 FROM 
+	 	aurorascm.contract_manage
+	WHERE  
+		create_time LIKE CONCAT(#{date},'%')
+	</select>	
+	
+			<!-- 根据时间统计已经付款完成的合同数量; -->
+<select id="getContractNumByDatePay" parameterType="String" resultType="int">
+	 SELECT 
+	 	count(contract_id) num
+	 FROM 
+	 	aurorascm.contract_manage
+	WHERE  
+		pay_time LIKE CONCAT(#{date},'%')
+	</select>
+	
+	
+	<!-- 按月统计所有商品合计浏览量GPV -->
+	<select id="getGPVByMonth" parameterType="pd" resultType="int">
+	   SELECT 
+		 SUM(${date}) as num
+	 FROM 
+	 	aurorascm.data_goods_visit
+	</select>
+	
+	<!-- 时间,贸易类型trade_type统计下单商品单数 -->
+	<select id="getGoodsNumByDT" parameterType="pd" resultType="int">
+	   SELECT 
+			SUM(g.goods_num) num
+	 FROM 
+	 	aurorascm.order_goods g
+	 INNER JOIN
+	 	aurorascm.order_manage m
+	 ON 
+	 	g.order_id = m.order_id
+	 WHERE 
+	 	m.order_state IN(2,6,7,8)
+	 AND
+	 	m.take_order_time LIKE CONCAT(#{date},'%')
+	 	<if test="tradeType!=null">
+		 	AND g.trade_type = #{tradeType}
+		 	</if>
+	</select>
+	
+		<!-- 条件查询商品统计列表 -->
+	<select id="getSGoodsByCondition" parameterType="page" resultType="pd">
+	   	SELECT 
+			 c.goods_id, c.goods_name,
+			 m.ship_type, m.rnum1, m.rnum2, m.rnum3, m.rnum1, m.goods_price1, m.goods_price2,m.goods_stock,
+			 s.total_sale, 
+			 p.total_profit,p.total_turnover,  
+			 v.total_count 
+		FROM 
+		 	aurorascm.goods_manage m
+		INNER JOIN
+			aurorascm.goods_common c
+		ON 
+		 	c.goods_id = m.goods_id
+		LEFT JOIN
+		 	aurorascm.data_goods_sale s
+		ON 
+		 	s.goods_id = m.goods_id
+		LEFT JOIN
+		 	aurorascm.data_goods_profit p
+		ON 
+		 	p.goods_id = m.goods_id
+		LEFT JOIN
+		 	aurorascm.data_goods_visit v
+		ON 
+		 	v.goods_id = m.goods_id
+		WHERE  1=1
+			<if test="pd.categoryID !=null ">
+				AND c.category1_id = #{pd.categoryID}
+				</if>
+		 	<if test="pd.keyword!=null">
+			 	AND m.goods_id = #{pd.keyword}
+			 	OR c.goods_name LIKE CONCAT('%',#{pd.keyword},'%')
+			 	</if>
+		ORDER BY
+		<if test="pd.oderBy == '1'.toString"> s.total_sale ${pd.orderAD}</if>
+		<if test="pd.oderBy == '2'.toString"> m.goods_stock ${pd.orderAD}</if>
+		<if test="pd.oderBy == '2'.toString"> p.total_profit ${pd.orderAD}</if>
+		LIMIT 
+			#{fromIndex}, #{pageSize}
+	</select>   
+	   
+	   <!-- 条件查询商品统计总数 -->
+	<select id="getSGoodsNumByCondition" parameterType="page" resultType="int">
+	   	SELECT 
+			 count(c.goods_id) num  
+		FROM 
+		 	aurorascm.goods_manage m
+		INNER JOIN
+			aurorascm.goods_common c
+		ON 
+		 	c.goods_id = m.goods_id
+		WHERE  1=1
+		<if test="pd.categoryID!=null">
+			AND c.category1_id = #{pd.categoryID}
+			</if>
+		 	<if test="pd.keyword!=null">
+			 	AND m.goods_id = #{pd.keyword}
+			 	OR c.goods_name LIKE CONCAT('%',#{pd.keyword},'%')
+			 	</if>
+	</select>   
+	    
+	 <!--  统计商品总销售量; -->
+	<select id="getSGSaleNum" resultType="int">
+		SELECT 
+			SUM(total_sale) num
+		FROM 
+		 	aurorascm.data_goods_sale
+	</select>  
+	    
+	   <!--  统计商品总浏览量; -->
+	<select id="getSGVNum" resultType="int">
+	   	SELECT 
+			 SUM(total_count) num  
+		FROM 
+		 	aurorascm.data_goods_visit
+	</select>   
+	
+	<!-- 上架商品总数 -->   
+	<select id="getShelvesGNum" resultType="int">
+	   	SELECT 
+			 count(goods_id) num  
+		FROM 
+		 	aurorascm.goods_manage
+		WHERE
+			goods_state = 4
+	</select>  
+	   
+	   <!-- 网站总的访客数; -->
+	   	<select id="getUV" resultType="int">
+	   	SELECT 
+			 SUM(total_count) num  
+		FROM 
+		 	aurorascm.data_visitor_count
+	</select>  
+	   
+		<!--  获取一级类目 -->
+	<select id="getCategory1" resultType="pd">
+		SELECT
+			category_id,
+			category_name
+		FROM
+			aurorascm.goods_category
+		WHERE
+			category_level = '1'
+		ORDER BY
+			location_sort ASC
+	</select>   
+	   
+</mapper>

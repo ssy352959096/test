@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="InquiryReadMapper">
+	<resultMap type="com.aurora.entity.InquiryManage" id="InquiryManageResultMap">
+		<id column="inquiry_id" property="inquiryID"/>
+		<result column="sales_manager" property="salesManager"/>
+		<result column="inquiry_state" property="inquiryState"/>
+		<result column="inquiry_time" property="inquiryTime"/>
+		<result column="offerer" property="offerer"/>
+		<result column="offer_time" property="offerTime"/>
+		<result column="customer_id" property="customerID"/>
+		<result column="customer_name" property="customerName"/>
+		<result column="customer_email" property="customerEmail"/>
+		<result column="customer_mobile" property="customerMobile"/>
+		<result column="source_id" property="sourceID"/>
+		<result column="inquiry_times" property="inquiryTimes"/>
+		<collection property="inquiryGoodsList" column="inquiry_id" ofType="com.aurora.entity.InquiryGoods">
+			<id column="inquiry_goods_id" property="inquiryGoodsID"/>
+			<result column="inquiry_id" property="inquiryID"/>
+			<result column="goods_name" property="goodsName"/>
+			<result column="goods_map" property="goodsMap"/>
+			<result column="goods_brand" property="goodsBrand"/>
+			<result column="goods_norm" property="goodsNorm"/>
+			<result column="goods_code" property="goodsCode"/>
+			<result column="buy_num" property="buyNum"/>
+			<result column="update_num" property="updateNum"/>
+			<result column="deliver_country" property="deliverCountry"/>
+			<result column="deliver_city" property="deliverCity"/>
+			<result column="logistics_type" property="logisticsType"/>
+			<result column="trade_type" property="tradeType"/>
+			<result column="ready_time" property="readyTime"/>
+			<result column="valid_time" property="validTime"/>
+			<result column="customer_remark" property="customerRemark"/>
+			<result column="currency_sign" property="currencySign"/>
+			<result column="currency_name" property="currencyName"/>
+			<result column="pallet_volume" property="palletVolume"/>
+			<result column="volume" property="volume"/>
+			<result column="pallet_price" property="palletPrice"/>
+			<result column="goods_price" property="goodsPrice"/>
+			<result column="supply_price" property="supplyPrice"/>
+			<result column="postage" property="postage"/>
+			<result column="inquiry_goods_state" property="inquiryGoodsState"/>
+			<result column="record" property="record"/>
+			<result column="inputor" property="inputor"/>
+			<result column="input_time" property="inputTime"/>
+		</collection>
+	</resultMap>
+	<resultMap type="com.aurora.entity.InquiryGoods" id="InquiryGoodsResultMap">
+		<id column="inquiry_goods_id" property="inquiryGoodsID"/>
+		<result column="inquiry_id" property="inquiryID"/>
+		<result column="goods_name" property="goodsName"/>
+		<result column="goods_map" property="goodsMap"/>
+		<result column="goods_brand" property="goodsBrand"/>
+		<result column="goods_norm" property="goodsNorm"/>
+		<result column="goods_code" property="goodsCode"/>
+		<result column="buy_num" property="buyNum"/>
+		<result column="update_num" property="updateNum"/>
+		<result column="deliver_country" property="deliverCountry"/>
+		<result column="deliver_city" property="deliverCity"/>
+		<result column="logistics_type" property="logisticsType"/>
+		<result column="trade_type" property="tradeType"/>
+		<result column="ready_time" property="readyTime"/>
+		<result column="valid_time" property="validTime"/>
+		<result column="customer_remark" property="customerRemark"/>
+		<result column="currency_sign" property="currencySign"/>
+		<result column="currency_name" property="currencyName"/>
+		<result column="pallet_volume" property="palletVolume"/>
+		<result column="volume" property="volume"/>
+		<result column="pallet_price" property="palletPrice"/>
+		<result column="goods_price" property="goodsPrice"/>
+		<result column="supply_price" property="supplyPrice"/>
+		<result column="postage" property="postage"/>
+		<result column="inquiry_goods_state" property="inquiryGoodsState"/>
+		<result column="record" property="record"/>
+		<result column="inputor" property="inputor"/>
+		<result column="input_time" property="inputTime"/>
+	</resultMap>
+
+
+	<!-- @author SSY 2018-1-8 条件查询询价单列表; -->
+	<select id="getInquiryList" parameterType="page" resultMap="InquiryManageResultMap">
+		SELECT
+			s.*,g.*
+		FROM
+			aurorascm.inquiry_sheet s
+		INNER JOIN 
+			aurorascm.inquiry_goods g
+		ON 
+			s.inquiry_id = g.inquiry_id
+		INNER JOIN 
+			aurorascm.sys_customer c
+		ON
+			c.customer_id = s.customer_id
+		INNER JOIN
+			aurora.sys_user u
+		ON
+			u.user_id = c.sales_manager
+		WHERE 1=1
+		<if test="pd.inquiryID!=null">
+			AND s.inquiry_id = #{pd.inquiryID}
+		</if>
+		<if test="pd.inquiryState!=null">
+			AND s.inquiry_state = #{pd.inquiryState}
+		</if>
+		<if test="pd.salesManager!=null">
+			AND u.user_id = #{pd.salesManager}
+		</if>
+		<if test="pd.beginTime!=null">
+			AND s.inquiry_time &gt; #{pd.beginTime}
+		</if>
+		<if test="pd.endTime!=null">
+			AND s.inquiry_time &lt; #{pd.endTime}
+		</if>
+		ORDER BY
+			s.inquiry_time DESC
+		LIMIT 
+			#{fromIndex}, #{pageSize}
+	</select>
+	
+	<!-- @author SSY 2018-1-8 条件查询询价单数量列表; -->
+	<select id="getInquiryNum" parameterType="page" resultType="int">
+		SELECT
+			count(DISTINCT s.inquiry_id) as num
+		FROM
+			aurorascm.inquiry_sheet s
+		INNER JOIN 
+			aurorascm.sys_customer c
+		ON
+			c.customer_id = s.customer_id
+		INNER JOIN
+			aurora.sys_user u
+		ON
+			u.user_id = c.sales_manager  
+		WHERE 1=1
+		<if test="pd.inquiryID!=null">
+			AND s.inquiry_id = #{pd.inquiryID}
+		</if>
+		<if test="pd.inquiryState!=null">
+			AND s.inquiry_state = #{pd.inquiryState}
+		</if>
+		<if test="pd.salesManager!=null">
+			AND u.user_id = #{pd.salesManager}
+		</if>
+		<if test="pd.beginTime!=null">
+			AND s.inquiry_time &gt; #{pd.beginTime}
+		</if>
+		<if test="pd.endTime!=null">
+			AND s.inquiry_time &lt; #{pd.endTime}
+		</if>
+	</select>
+
+	<!-- @author SSY 2018-1-8 查询符合询价状态的询价单数量; -->
+	<select id="getInquiryStateNum" parameterType="pd" resultType="int">
+		SELECT
+			count(DISTINCT inquiry_id) as num
+		FROM
+			aurorascm.inquiry_sheet s
+		INNER JOIN 
+			aurorascm.sys_customer c
+		ON
+			c.customer_id = s.customer_id
+		INNER JOIN
+			aurora.sys_user u
+		ON
+			u.user_id = c.sales_manager
+		WHERE 
+			inquiry_state = #{inquiryState}
+		<if test="salesManager!=null">
+			AND u.user_id = #{salesManager}
+		</if>
+	</select>
+
+
+	<!-- @author SSY 2018-1-8 查询当天询价数量; -->
+	<select id="getInquiryDayNum" parameterType="pd" resultType="int">
+		SELECT
+			count(DISTINCT inquiry_id) as num
+		FROM
+			aurorascm.inquiry_sheet s
+			INNER JOIN 
+			aurorascm.sys_customer c
+		ON
+			c.customer_id = s.customer_id
+		INNER JOIN
+			aurora.sys_user u
+		ON
+			u.user_id = c.sales_manager
+		WHERE 
+			inquiry_time LIKE CONCAT(#{date},'%')
+		<if test="salesManager!=null">
+			AND u.user_id = #{salesManager}
+		</if>
+	</select>
+
+	<!-- @author SSY 2018-1-8 查询符合询价单id,询价商品id以及对应销售的询价商品; -->
+	<select id="getInquiryGoods" parameterType="pd" resultMap="InquiryGoodsResultMap">
+		SELECT
+			*
+		FROM 
+			aurorascm.inquiry_goods 
+		WHERE 
+			inquiry_id = #{inquiryID}
+		AND 
+			inquiry_goods_id = #{inquiryGoodsID}
+	</select>
+	
+	<!-- @author SSY 2018-1-9 查询询价单专属销售id  -->
+	<select id="getInquriySalesManage" parameterType="String" resultType="int">
+		SELECT
+			sales_manager
+		FROM
+			aurorascm.inquiry_sheet 
+		WHERE 
+			inquiry_id = #{inquiryID}
+	</select>
+	
+	<!-- @author SSY 2018-2-22  查询未报价的询价单,包含询价单的现任专属销售id和数量; -->
+	<select id="getNoQuotationRemain" resultType="pd">
+		SELECT
+			c.sales_manager,COUNT(s.inquiry_id) as num, u.user_mobile
+		FROM
+			aurorascm.inquiry_sheet s
+		INNER JOIN 
+			aurorascm.sys_customer c
+		ON 
+			s.customer_id = c.customer_id
+		INNER JOIN 
+			aurora.sys_user u
+		ON 
+			c.sales_manager = u.user_id
+		WHERE 
+			s.inquiry_state = 1
+		GROUP BY 
+			c.sales_manager
+	</select>
+	
+ 	<!-- @author BYG 2018-4-16  获取询价商品品牌、及客户手机号 -->
+	<select id="getInquiryBrandAndMobile" parameterType="String" resultType="pd">
+	SELECT
+		DISTINCT(g.goods_brand),
+		s.customer_mobile
+	FROM
+		aurorascm.inquiry_goods g
+	INNER JOIN
+		aurorascm.inquiry_sheet s
+	ON
+		g.inquiry_id = s.inquiry_id
+	WHERE 
+		s.inquiry_id = #{inquiryID}
+	</select>
+
+	<!-- ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ -->
+	<!-- **************************************我是分割线******************************************* -->
+	<!-- ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ -->
+		
+		
+
+</mapper>

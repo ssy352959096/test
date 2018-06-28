@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="HomeLargeCargoReadMapper">
+
+	
+	<resultMap type="com.aurora.entity.home.HomeLargeCargo" id="LargeCargoResultMap">
+		<id column="id" property="id"/>
+		<result column="category_id" property="categoryID"/>
+		<result column="goods_id" property="goodsID"/>
+		<result column="goods_show_name" property="goodsShowName"/>
+		<result column="goods_code" property="goodsCode"/>
+		<result column="price" property="price"/>
+		<result column="currency" property="currency"/>
+		<result column="norm" property="norm"/>
+		<result column="min_num" property="minNum"/>
+		<result column="period" property="period"/>
+		<result column="supplier" property="supplier"/>
+		<result column="delivery_address" property="deliveryAddress"/>
+		<result column="hot" property="hot"/>
+		<result column="update_time" property="updateTime"/>
+	</resultMap>
+	
+	
+	<!-- @author SSY 2018-06-15  获取 大货集散商品列表-->
+	<select id="getLargeCargoByCategory" parameterType="page" resultMap="LargeCargoResultMap">
+		SELECT		
+			*
+		FROM		
+			aurorascm.large_cargo
+		WHERE		
+			category_id = #{t.categoryID}
+		ORDER BY	
+			update_time DESC
+		LIMIT 
+			#{fromIndex}, #{pageSize}
+	</select>
+	
+	<!-- @author SSY 2018-06-15  获取 大货集散商品列表分类总数 -->
+	<select id="getLargeCargoNumByCategory" parameterType="page" resultType = "java.lang.Integer">
+		SELECT		
+			count(id) as num
+		FROM		
+			aurorascm.large_cargo
+		WHERE		
+			category_id = #{t.categoryID}
+	</select>
+	
+	<!-- @author SSY 2018-06-15  获取大货集散首页展示排序-->
+	<select id="getHomeLCOrderByCategory" parameterType="java.lang.Integer" resultType="java.lang.String">
+		SELECT		
+			seat_order as seatOrder
+		FROM		
+			aurorascm.home_large_cargo
+		WHERE		
+			category_id = #{categoryID}
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	 
+</mapper>

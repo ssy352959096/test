@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CommodityEntryWriteMapper">
+	<!-- 字段 -->
+	<sql id="CEfields">
+		commodity_id,
+		brand_name,
+		small_class_name,
+		commodity_name,
+		provenance,
+		company,
+		SPEC,
+		EAN,
+		major_supplier,
+		category_attribution,
+		regulations,
+		gage,
+		phone_url1,
+		phone_url2,
+		phone_url3,
+		phone_url4,
+		phone_url5,
+		maintain_user,
+		update_time,
+		update_name
+	</sql>
+	<!-- 字段值 -->
+	<sql id="CEfieldValues">
+		#{commodityId},
+		#{brandName},
+		#{smallClassName},
+		#{commodityName},
+		#{provenance},
+		#{company},
+		#{SPEC},
+		#{EAN},
+		#{majorSupplier},
+		#{categoryAttribution},
+		#{regulations},
+		#{gage},
+		#{phoneUrl1},
+		#{phoneUrl2},
+		#{phoneUrl3},
+		#{phoneUrl4},
+		#{phoneUrl5},
+		#{maintainUser},
+		#{updateTime},
+		#{updateName}
+	</sql>
+	
+	<!--@author KJH  @date 2018年6月26日 下午4:14:51  新增商品设定信息 -->
+	<insert id="addCommodityEntryInFo" parameterType="com.aurora.entity.dcc.CommodityEntry">
+		INSERT INTO
+		dcc.commodity_entry(
+		<include refid="CEfields"></include>
+		)
+		VALUES(
+		<include refid="CEfieldValues"></include>
+		)
+	</insert>
+	<!--@author KJH  @date 2018年6月26日 下午4:15:54 修改商品设定信息 -->
+	<update id="updateCommodityEntryInFo" parameterType="com.aurora.entity.dcc.CommodityEntry" >
+		UPDATE dcc.commodity_entry  SET
+		brand_name=#{brandName},
+		small_class_name=#{smallClassName},
+		commodity_name=#{commodityName},
+		provenance=#{provenance},
+		company=#{company},
+		SPEC=#{SPEC},
+		EAN=#{EAN},
+		major_supplier=#{majorSupplier},
+		category_attribution=#{categoryAttribution},
+		regulations=#{regulations},
+		gage=#{gage},
+		phone_url1=#{phoneUrl1},
+		phone_url2=#{phoneUrl2},
+		phone_url3=#{phoneUrl3},
+		phone_url4=#{phoneUrl4},
+		phone_url5=#{phoneUrl5},
+		maintain_user=#{maintainUser},		
+		update_time=#{updateTime},
+		update_name=#{updateName}
+		WHERE commodity_id=#{commodityId}
+	</update>
+</mapper>

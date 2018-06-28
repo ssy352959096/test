@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MenuWriteMapper">
+
+	<!-- 字段 -->
+	<sql id="Field">
+		menu_name,
+		menu_url,
+		menu_parent_id,
+		menu_order,
+		menu_level,
+		menu_state
+	</sql>
+
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{menuName},
+		#{menuURL},
+		#{menuParentID},
+		#{menuOrder},
+		#{menuLevel},
+		#{menuState}
+	</sql>
+	
+	<!-- 保存新增菜单 -->
+	<insert id="saveNewMenu" parameterType="pd" >
+		INSERT INTO
+			aurora.sys_menu
+		(
+			<include refid="Field"></include>
+		) VALUES (
+			<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 保存修改菜单 -->
+	<update id="saveEditMenu" parameterType="pd" >
+		UPDATE
+			aurora.sys_menu
+		SET
+			menu_name 			= #{menuName},
+			menu_url 			= #{menuURL},
+			menu_parent_id		= #{menuParentID},
+			menu_order			= #{menuOrder},
+			menu_level			= #{menuLevel},
+			menu_state			= #{menuState}
+		WHERE 
+			menu_id = #{menuID}
+	</update>
+	
+	<!-- 根据菜单ID删除菜单 -->
+	<delete id="deleteMenuByMenuID" parameterType="int" >
+		DELETE FROM 
+			aurora.sys_menu
+		WHERE 
+			menu_id = #{menuID}
+	</delete>
+	
+</mapper>

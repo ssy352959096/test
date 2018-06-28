@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ContactsReadMapper">
+	<resultMap type="com.aurora.entity.dcc.Contacts" id="Contacts">
+		<id column="contacts_id" property="contactsId" />
+		<result column="enterprise_id" property="enterpriseId" />
+		<result column="contacts" property="contacts" />
+		<result column="telephone" property="telephone" />
+		<result column="post" property="post" />
+		<result column="e_mail" property="e_mail" />
+		<result column="fax" property="fax" />
+		<result column="weixin" property="weixin" />
+		<result column="qq" property="qq" />
+		<result column="enterprise_website" property="enterpriseWebsite" />
+		<result column="remarks" property="remarks" />
+		<result column="update_time" property="updateTime" />
+		<result column="update_name" property="updateName" />
+	</resultMap>
+	<sql id="ContactsField">
+		contacts_id,
+		enterprise_id,
+		contacts,
+		telephone,
+		post,
+		e_mail,
+		fax,
+		weixin,
+		qq,
+		enterprise_website,
+		remarks,
+		update_time,
+		update_name
+	</sql>
+	<sql id="ContactsFieldValue">
+		#{contactsId},
+		#{enterpriseId},
+		#{contacts},
+		#{contacts},
+		#{telephone},
+		#{post},
+		#{e_mail},
+		#{fax},
+		#{weixin},
+		#{qq},
+		#{enterpriseWebsite},
+		#{remarks},
+		#{updateTime},
+		#{updateName}
+	</sql>
+	
+</mapper>

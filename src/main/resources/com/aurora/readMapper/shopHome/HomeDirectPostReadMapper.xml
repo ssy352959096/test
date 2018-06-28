@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="HomeDirectPostReadMapper">
+
+	<resultMap type="com.aurora.entity.home.HomeDirectPost" id="DirectPostResultMap">
+		<id column="id" property="id"/>
+		<result column="title_id" property="titleID"/>
+		<result column="title_name" property="titleName"/>
+		<result column="type" property="type"/>
+		<result column="banner" property="banner"/>
+		<result column="seat" property="seat"/>
+		<result column="goods_id" property="goodsID"/>
+		<result column="goods_show_name" property="goodsShowName"/>
+		<result column="goods_show_map" property="goodsShowMap"/>
+		<result column="keywords" property="keywords"/>
+		<result column="operator" property="operator"/>
+		<result column="update_time" property="updateTime"/>
+	</resultMap>
+
+	<!-- @author BYG 2018-5-3  根据标题ID获取banner图和关键词-->
+	<select id="getTitleBannerKeywordsByTitleID" parameterType="String" resultMap="DirectPostResultMap">
+		SELECT		title_id,title_name,banner,keywords
+		FROM		aurorascm.home_direct_post
+		WHERE		title_id = #{titleID}
+		AND			type = 1
+	</select>
+	
+	<!-- @author BYG 2018-5-3  根据标题ID获取商品-->
+	<select id="getGoodsListByTitleID" parameterType="String" resultMap="DirectPostResultMap">
+		SELECT		title_id,title_name,seat,goods_id,goods_show_name,goods_show_map
+		FROM		aurorascm.home_direct_post
+		WHERE		title_id = #{titleID}
+		AND			type = 2
+		ORDER BY	seat ASC
+	</select>
+	
+	<!-- @author BYG 2018-5-3  根据标题ID获取ID数量-->
+	<select id="getCountIDByTitleID" parameterType="com.aurora.entity.home.HomeDirectPost" resultType="int">
+		SELECT		COUNT(id) count
+		FROM		aurorascm.home_direct_post
+		WHERE		title_id = #{titleID}
+	</select>
+	
+	<!-- @author BYG 2018-5-3  根据标题ID、位置seat、类型type 获取ID数量-->
+	<select id="getCountIDByTitleIDAndSeat" parameterType="com.aurora.entity.home.HomeDirectPost" resultType="int">
+		SELECT		COUNT(id) count
+		FROM		aurorascm.home_direct_post
+		WHERE		title_id = #{titleID}
+		AND			seat = #{seat}
+		AND			type = #{type}
+	</select>
+</mapper>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="HomeBondedWriteMapper">
+ 
+ 
+	<!--@author SSY 2018-05-02   新增 首页保税仓商品 -->
+    <insert id="addHomeBonded" parameterType="com.aurora.entity.home.HomeBonded">
+    	INSERT INTO  aurorascm.home_bonded
+    		(goods_id,goods_new_name,location,home_map,update_time,updator)
+    	VALUES
+    		(#{goodsID},#{goodsNewName},#{location},#{homeMap},#{updateTime},#{updator})
+    </insert>
+     
+    <!--@author SSY 2018-05-02   更新 保税仓商品  -->
+    <update id="updateHomeBonded" parameterType="com.aurora.entity.home.HomeBonded">
+    	UPDATE  
+    		aurorascm.home_bonded
+    	SET
+    		goods_id = #{goodsID},
+    		goods_new_name = #{goodsNewName},
+    		location = #{location},
+    		home_map = #{homeMap},
+			updator = #{updator},
+			update_time = #{updateTime}
+    	WHERE
+    		id = #{id}
+    </update>
+    
+	<!--@author SSY 2018-04-28  删除 首页专题 -->
+    <delete id="deleteHomeBonded" parameterType="java.lang.Integer">
+    	DELETE  FROM 
+    		aurorascm.home_bonded
+    	WHERE 
+    		id = #{id}
+    </delete>
+    
+     
+    
+</mapper>

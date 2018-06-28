@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="HomeFloorReadMapper">
+	<resultMap type="com.aurora.entity.home.HomeFloorGoods" id="HomeFloorResultMap">
+		<id column="id" property="id"/>
+		<result column="category1_id" property="category1ID"/>
+		<result column="goods_id" property="goodsID"/>
+		<result column="goods_new_name" property="goodsNewName"/>
+		<result column="home_map" property="homeMap"/>
+		<result column="operate_time" property="operateTime"/>
+		<result column="operator" property="operator"/>
+	</resultMap>
+	
+ 	<resultMap type="com.aurora.entity.home.HomeFloorBrand" id="HomeFloorBrandResultMap">
+		<id column="id" property="id"/>
+		<result column="brand_id" property="brandID"/>
+		<result column="brand_name" property="brandName"/>
+		<result column="floor" property="floor"/>
+		<result column="location" property="location"/>
+		<result column="operate_time" property="operateTime"/>
+		<result column="operator" property="operator"/>
+	</resultMap>
+ 
+ 
+ 
+ 
+	<!-- @author SSY 2018-05-02 根据类目id查询该楼层下的商品; -->
+	<select id="getHomeFloor" parameterType="java.lang.Integer" resultMap="HomeFloorResultMap" >
+		SELECT 
+			*
+		FROM
+			aurorascm.home_floor_goods
+		WHERE
+			category1_id = #{category1ID}
+	</select>
+	
+	<!-- @author SSY 2018-05-02 根据类目id查询该楼层下的商品; -->
+	<select id="getHomeFloorBrand" parameterType="java.lang.Integer" resultMap="HomeFloorBrandResultMap" >
+		SELECT 
+			*
+		FROM
+			aurorascm.home_floor_brand
+		WHERE
+			floor = #{floor}
+	</select>
+</mapper>

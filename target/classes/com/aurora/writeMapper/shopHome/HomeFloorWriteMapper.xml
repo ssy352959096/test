@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="HomeFloorWriteMapper">
+  
+    <!--@author SSY 2018-05-03  新增首页各类目商品 -->
+    <insert id="addHomeFloorGoods" parameterType="com.aurora.entity.home.HomeFloorGoods">
+    	INSERT INTO
+    		aurorascm.home_floor_goods
+    		(category1_id,goods_id,goods_new_name,home_map,operator,operate_time)
+    	VALUES
+    		(#{category1ID},#{goodsID},#{goodsNewName},#{homeMap},#{operator},#{operateTime})
+    </insert>
+    
+    
+     <!--@author SSY 2018-05-03  修改首页各类目商品 -->
+    <update id="updateHomeFloorGoods" parameterType="com.aurora.entity.home.HomeFloorGoods">
+    	UPDATE  
+    		aurorascm.home_floor_goods
+    	SET
+    		category1_id = #{category1ID},
+    		goods_id =  #{goodsID},
+    		goods_new_name = #{goodsNewName},
+    		home_map = #{homeMap},
+    		operator = #{operator},
+			operate_time = #{operateTime}
+    	WHERE
+    		id = #{id}
+    </update>
+        
+     <!--@author SSY 2018-05-03  删除首页各类目商品 -->
+    <update id="deleteHomeFloorGoods" parameterType="java.lang.Integer">
+    	DELETE  FROM 
+    		aurorascm.home_floor_goods
+    	WHERE 
+    		id = #{id}
+    </update>
+    
+    <!--@author SSY 2018-05-04  新增或者修改首页类目商品中的热门品牌 -->
+    <insert id="updateHomeFloorBrand" parameterType="com.aurora.entity.home.HomeFloorBrand">
+    	  <selectKey  keyProperty="id" resultType="int" order="BEFORE"> 
+            SELECT 
+            	id
+            FROM 
+            	aurorascm.home_floor_brand 
+            WHERE 
+            	floor = #{floor} 
+            AND 
+                location = #{location}
+        </selectKey> 
+        <!-- 如果大于0则更新 --> 
+        <if test="id!=null"> 
+            UPDATE 
+           		aurorascm.home_floor_brand 
+            SET 
+           	 	brand_id = #{brandID},
+			    brand_name = #{brandName},
+			    operator = #{operator},
+			    operate_time = #{operateTime}
+           WHERE 
+            	floor = #{floor} 
+            AND 
+                location = #{location}
+		</if> 
+
+        <!-- 如果等于0则保存 --> 
+        <if test="id==null">
+			INSERT INTO
+				aurorascm.home_floor_brand 
+			(
+				brand_id,brand_name,floor,location,operator,operate_time 
+			) VALUES (
+			    #{brandID}, #{brandName}, #{floor}, #{location},#{operator}, #{operateTime}
+ 			) 
+        </if> 
+    </insert>
+    
+    
+</mapper>

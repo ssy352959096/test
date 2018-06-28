@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BrandReadMapper">
+
+	<!-- 获取商品一级类目信息 -->
+	<select id="getBrandCountry" resultType="pd">
+		SELECT
+			*
+		FROM
+			aurorascm.brand_country
+	</select> 
+	
+	<!-- 获取所有品牌信息 -->
+	<select id="getBrand" resultType="pd">
+		SELECT
+			brand_id,
+			brand_name
+		FROM
+			aurorascm.brand
+		ORDER BY
+			brand_name
+	</select> 
+	
+	<!-- 根据品牌ID获取品牌信息 -->
+	<select id="getBrandByID" resultType="pd">
+		SELECT
+			b.brand_id,
+			b.brand_name,
+			b.country_cname,
+			b.country_ename,
+			b.brand_map,
+			b.advertise_map,
+			b.recommend_map,
+			b.brand_describe1,
+			b.brand_describe2,
+			b.care_num,
+			bc.brand_category_id,
+			bc.brand_category_name,
+			c.national_flag as brand_national_flag,
+			c.country_cname as brand_country_cname,
+			c.country_ename as brand_country_ename
+		FROM
+			aurorascm.brand b
+		INNER JOIN
+			aurorascm.brand_country c
+		ON
+			b.brand_icon = c.brandc_id
+		INNER JOIN
+			aurorascm.brand_category bc
+		ON
+			b.brand_category_id = bc.brand_category_id
+		WHERE
+			brand_id = #{brandID}
+	</select> 
+	
+<!-- @author SSY  分页条件查询获取所有品牌信息 -->
+	<select id="getBrandWithAll" parameterType="page" resultType="pd">
+		SELECT
+			 brand_id,
+			 brand_name,
+			 country_cname,
+			 country_ename,
+			 brand_map,
+			 care_num
+		FROM
+			aurorascm.brand
+		WHERE
+			1=1
+		<if test=" pd.bcategoryId != null">
+			AND         
+				brand_category_id = #{pd.bcategoryId}
+			</if>
+		<if test=" pd.brandName != null">
+			AND	
+				brand_name LIKE CONCAT(CONCAT('%', #{pd.brandName}),'%')
+			</if>
+		ORDER BY
+			brand_name
+		LIMIT 
+			#{fromIndex}, #{pageSize}
+	</select> 
+	
+	<!-- 根据品牌id查询该品牌下商品的数量 -->
+	<select id="getGoodsNumByBID"  parameterType="String" resultType="int">
+		SELECT
+			count(goods_id) num
+		FROM
+			aurorascm.goods_common
+		WHERE
+			brand_id = #{brandID}
+	</select>
+	
+<!-- @author SSY  获取所有品牌数量 -->
+	<select id="getBrandNum"  parameterType="page" resultType="pd">
+		SELECT
+			count(brand_id) num
+		FROM
+			aurorascm.brand
+		WHERE
+			1=1
+		 
+		<if test=" pd.bcategoryId != null">
+			AND         
+				brand_category_id = #{pd.bcategoryId}
+			</if>
+		<if test=" pd.brandName != null">
+			AND	
+				brand_name LIKE CONCAT(CONCAT('%', #{pd.brandName}),'%')
+			</if>
+		 
+	</select> 
+	
+	<!-- @author SSY  获取所有品牌类目-->
+	<select id="getBrandCategory" resultType="pd">
+		SELECT
+			*
+		FROM
+			aurorascm.brand_category
+	</select> 
+	
+	
+</mapper>

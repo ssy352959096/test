@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="HomeTimedActivityReadMapper">
+	<resultMap type="com.aurora.entity.home.TimedActivity" id="timedActivityMap">
+		<id column="activity_id" property="activityID"/>
+		<result column="activity_state" property="activityState"/>
+		<result column="begin_time" property="beginTime"/>
+		<result column="end_time" property="endTime"/>
+		<result column="creator" property="creator"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="updator" property="updator"/>
+		<collection property="timedGoodsList" column="activity_id" ofType="com.aurora.entity.home.TimedGoods">
+			<id column="id" property="id"/>
+			<result column="activity_id" property="activityID"/>
+			<result column="goods_id" property="goodsID"/>
+			<result column="goods_new_name" property="goodsNewName"/>
+			<result column="original_price1" property="originalPrice1"/>
+			<result column="original_price2" property="originalPrice2"/>
+			<result column="discount_price" property="discountPrice"/>
+			<result column="available_sell_num" property="availableSellNum"/>
+			<result column="sold_num" property="soldNum"/>
+		</collection>
+	</resultMap>
+	
+	<resultMap type="com.aurora.entity.GoodsManage" id="goodsResultMap">
+		<id column="goods_id" property="goodsID"/>
+		<result column="goods_price1" property="goodsPrice1"/>
+		<result column="goods_price2" property="goodsPrice2"/>
+		<result column="rnum1" property="rnum1"/>
+		<result column="rnum2" property="rnum2"/>
+		<result column="rnum3" property="rnum3"/>
+		<result column="goods_stock" property="goodsStock"/>
+		<result column="is_activity" property="isActivity"/>
+		<result column="original_price1" property="originalPrice1"/>
+		<result column="original_price2" property="originalPrice2"/>
+		<association property="goodsCommon" column="goods_id" javaType="GoodsCommon">
+			<id column="goods_id" property="goodsID"/>
+			<result column="goods_name" property="goodsName"/>
+			<result column="main_map" property="mainMap"/>
+		</association>
+	</resultMap>
+	
+	<!-- @author SSY 2018-04-26 -->
+	<select id="searchGoods" parameterType="java.lang.String" resultMap="goodsResultMap">
+		SELECT 
+			m.goods_id,m.goods_price1,m.goods_price2,m.rnum1,m.rnum2,m.rnum3,
+			m.goods_stock,m.is_activity,m.original_price1,m.original_price2,
+			n.goods_id,n.goods_name,n.main_map
+		FROM
+			aurorascm.goods_manage m
+		INNER JOIN 
+			aurorascm.goods_common n
+		ON 
+			n.goods_id = m.goods_id
+		WHERE
+			m.goods_id = #{goodsID}
+	</select>
+	
+	
+	<!-- @author SSY 2018-04-24 查询活动详情-->
+	<select id="getTimedActivity" parameterType="java.lang.Integer" resultMap="timedActivityMap">
+		SELECT 
+			*
+		FROM
+			aurorascm.home_timed_activity a
+		INNER JOIN
+			aurorascm.home_timed_goods g
+		ON 
+			a.activity_id = g.activity_id
+		WHERE
+			a.activity_id = #{activityID}
+	</select>
+	
+	
+	<!-- @author SSY 2018-04-24  分页条件查询活动列表id-->
+	<select id="getActivityIDList" parameterType="page" resultType="java.lang.Integer">
+		SELECT 
+			activity_id
+		FROM
+			aurorascm.home_timed_activity 
+		ORDER BY 
+			begin_time ASC
+		LIMIT #{fromIndex},#{pageSize}
+	</select>
+	
+	
+ 	<!-- @author SSY 2018-04-24  根据活动id批量查询查询活动列表-->
+	<select id="getActivityList" parameterType="list" resultMap="timedActivityMap">
+		SELECT 
+			*
+		FROM
+			aurorascm.home_timed_activity a
+		INNER JOIN
+			aurorascm.home_timed_goods g
+		ON 
+			a.activity_id = g.activity_id
+		WHERE	
+			a.activity_id IN (
+				<foreach collection="list" index="index" item="item" separator=",">
+					#{item}
+				</foreach>
+			)
+		ORDER BY 
+			a.begin_time ASC
+	</select>
+	
+	<!-- @author SSY 2018-04-24 查询活动总数 -->
+	<select id="getActivityNum" parameterType="page" resultType="int">
+		SELECT 
+			count(a.activity_id)
+		FROM
+			aurorascm.home_timed_activity a
+		INNER JOIN
+			aurorascm.home_timed_goods g
+		ON 
+			a.activity_id = g.activity_id
+	</select>
+	
+  	<!-- @author SSY 2018-04-26  查询生效中且endTime<今天的活动列表-->
+	<select id="getActivityValidList" parameterType="page" resultMap="timedActivityMap">
+		SELECT 
+			*
+		FROM
+			aurorascm.home_timed_activity a
+		INNER JOIN
+			aurorascm.home_timed_goods g
+		ON 
+			a.activity_id = g.activity_id
+		WHERE  
+			a.activity_state = #{t.activityState}
+		AND 
+			a.end_time &lt; #{t.endTime}
+		ORDER BY 
+			a.begin_time ASC
+	</select>
+	
+	<!-- @author SSY 2018-04-26  查询生效中且endTime<今天的活动列表-->
+	<select id="getActivityWillValidList" parameterType="page" resultMap="timedActivityMap">
+		SELECT 
+			*
+		FROM
+			aurorascm.home_timed_activity a
+		INNER JOIN
+			aurorascm.home_timed_goods g
+		ON 
+			a.activity_id = g.activity_id
+		WHERE  
+			a.activity_state = #{t.activityState}
+		AND 
+			a.begin_time &lt;= #{t.beginTime}
+		AND 
+			a.end_Time &gt;= #{t.endTime}
+		ORDER BY 
+			a.begin_time ASC
+	</select>
+</mapper>

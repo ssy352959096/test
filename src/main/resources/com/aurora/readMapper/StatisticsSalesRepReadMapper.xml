@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="StatisticsSalesRepReadMapper">
+
+	<!-- @author SSY 根据时间筛选,统计该销售代表近X天累计销售额 ; 时间参数筛选;-->
+	<select id="getSalesRepXDayTotalSales" parameterType="pd" resultType="pd">
+		SELECT  
+			IFNULL(SUM(pay_money),0) as pay_money,#{queryDate} as date
+		FROM
+			aurorascm.order_manage 
+		WHERE
+			pay_time &gt;= #{queryDate} 
+		AND
+			order_state NOT IN (1,3,9,10)
+		AND 
+			sales_manager = #{userID}
+	</select>
+	
+	<!-- @author SSY 根据时间筛选,统计该销售代表累计销售额 ; 左模糊匹配时间-->
+	<select id="getSalesRepTotalSales" parameterType="pd" resultType="pd">
+		SELECT  
+			IFNULL(SUM(pay_money),0) as pay_money,#{queryDate} as date
+		FROM
+			aurorascm.order_manage 
+		WHERE
+			pay_time LIKE CONCAT(#{queryDate},'%') 
+		AND
+			order_state NOT IN (1,3,9,10)
+		AND 
+			sales_manager = #{userID}
+	</select>
+
+
+
+
+	
+</mapper>

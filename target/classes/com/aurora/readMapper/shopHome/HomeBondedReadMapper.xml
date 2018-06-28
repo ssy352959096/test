@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="HomeBondedReadMapper">
+	<resultMap type="com.aurora.entity.home.HomeBonded" id="HomeBondedResultMap">
+		<id column="id" property="id"/>
+		<result column="goods_id" property="goodsID"/>
+		<result column="goods_new_name" property="goodsNewName"/>
+		<result column="location" property="location"/>
+		<result column="home_map" property="homeMap"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="updator" property="updator"/>
+	</resultMap>
+	
+ 
+	<!-- @author SSY 2018-05-02  查询  首页保税仓热卖商品列表 -->
+	<select id="getHomeBondedList"   resultMap="HomeBondedResultMap" >
+		SELECT
+			*
+		FROM
+			aurorascm.home_bonded
+	</select> 
+	 
+	 
+	 
+</mapper>

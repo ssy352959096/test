@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="StatisticsWebsiteReadMapper">
+
+	<!-- ip地址统计 -->
+	<select id="getIPDistribution" resultType="pd">
+		SELECT 
+			city,city_id,COUNT(city_id) as ip_num,SUM(total_num) as total_num
+		FROM
+			aurorascm.s_ip
+		WHERE 
+			country_id='CN'
+		GROUP BY 
+			city_id,city
+		ORDER BY 
+			ip_num DESC
+		LIMIT 0,30
+	</select>
+	
+	
+	<!-- 网站首页热力图*********点击分布 -->
+		<!--<select id="getModuleClickTimes" resultType="pd" >
+		SELECT 
+			module_name,click_num
+		FROM
+			aurorascm.s_module_click
+		WHERE 
+			module_state = 1
+		ORDER BY 
+			module_code ASC
+	</select>
+	-->
+	<select id="getHomeClick" parameterType="java.lang.String" resultType="pd" >
+		SELECT 
+			SUM(module1) as module1,SUM(module2) as module2,SUM(module3) as module3,SUM(module4) as module4,SUM(module5) as module5,
+			SUM(module6) as module6,SUM(module7) as module7,SUM(module8) as module8,SUM(module9) as module9,SUM(module10) as module10,
+			SUM(module11) as module11,SUM(module12) as module12,SUM(module13) as module13,SUM(module14) as module14,SUM(module15) as module15,
+			SUM(module16) as module16,SUM(module17) as module17,SUM(module18) as module18,SUM(module19) as module19,SUM(module20) as module20,
+			SUM(module21) as module21,SUM(module22) as module22,SUM(module23) as module23,SUM(module24) as module24,SUM(module25) as module25,
+			SUM(module26) as module26,SUM(module27) as module27,SUM(module28) as module28,SUM(module29) as module29,SUM(module30) as module30
+		FROM
+			aurorascm.s_home_click
+		WHERE 
+			date &gt;= #{_parameter}
+	</select>
+	
+	 
+	
+	<!-- PV分布24个时间段累计分布 根据时间获取-->
+	<select id="getDayPVDistribution" parameterType="java.lang.String" resultType="pd">
+		SELECT
+			SUM(day_num) as total_pv,
+			SUM(hour0) as hour0,SUM(hour1) as hour1,SUM(hour2) as hour2,SUM(hour3) as hour3,SUM(hour4) as hour4,SUM(hour5) as hour5,
+			SUM(hour6) as hour6,SUM(hour7) as hour7,SUM(hour8) as hour8,SUM(hour9) as hour9,SUM(hour10) as hour10,SUM(hour11) as hour11,
+			SUM(hour12) as hour12,SUM(hour13) as hour13,SUM(hour14) as hour14,SUM(hour15) as hour15,SUM(hour16) as hour16,SUM(hour17) as hour17,
+			SUM(hour18) as hour18,SUM(hour19) as hour19,SUM(hour20) as hour20,SUM(hour21) as hour21,SUM(hour22) as hour22,SUM(hour23) as hour23
+		FROM
+			aurorascm.s_pv
+		WHERE 1=1
+		<if test="_parameter!=null">
+			AND date = #{_parameter}
+		</if>
+	</select>
+	   
+	  
+	<!-- PV分布24个时间段累计分布 根据时间获取-->
+	<select id="getDayPV"  parameterType="java.lang.String" resultType="pd">
+		SELECT  
+			IFNULL(SUM(day_num),0) as day_num,#{_parameter} as date
+		FROM
+			aurorascm.s_pv
+		WHERE
+			date = #{_parameter}
+	</select>
+	
+	<!-- X日至今累计PV总量 -->
+	<select id="getTotalPV"  parameterType="java.lang.String" resultType="int">
+		SELECT  
+			IFNULL(SUM(day_num),0) as day_num 
+		FROM
+			aurorascm.s_pv
+		WHERE
+			date &gt;= #{_parameter}
+	</select>
+	
+
+	<!--  X日至今UV累计访客数,根据时间统计 -->
+	<select id="getTotalUV"  parameterType="java.lang.String" resultType="int">
+		SELECT  
+			IFNULL(SUM(day_num),0) day_num
+		FROM
+			aurorascm.s_uv
+		WHERE
+			date &gt;= #{_parameter}
+	</select>
+	   
+	   
+	   
+</mapper>

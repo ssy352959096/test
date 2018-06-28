@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="HomeLargeCargoWriteMapper">
+ 
+ 
+ 
+ <!--@author SSY 2018-06-15  新增商品-->
+    <insert id="addGoods" parameterType="com.aurora.entity.home.HomeLargeCargo">
+    	INSERT INTO  aurorascm.large_cargo
+    		(category_id,category_name,goods_id,goods_show_name,goods_code,price,currency,norm,min_num,
+    			period,delivery_address,hot,supplier,update_time,operator)
+    	VALUES
+    		(#{categoryID},#{categoryName},#{goodsID},#{goodsShowName},#{goodsCode},#{price},#{currency},#{norm},#{minNum},
+    			#{period},#{deliveryAddress},#{hot},#{supplier},#{updateTime},#{operator})
+    </insert>
+    
+     <!--@author SSY 2018-06-15   更新商品 -->
+    <update id="updateGoods" parameterType="com.aurora.entity.home.HomeLargeCargo">
+    	UPDATE  
+    		aurorascm.large_cargo
+    	SET
+    		goods_id = #{goodsID},
+    		goods_show_name = #{goodsShowName},
+    		goods_code = #{goodsCode},
+    		price = #{price},
+    		currency = #{currency},
+    		norm = #{norm},
+    		min_num = #{minNum},
+    		period = #{period},
+    		delivery_address = #{deliveryAddress},
+    		hot = #{hot},
+    		supplier = #{supplier},
+    		update_time = #{updateTime},
+    		operator = #{operator}
+    	WHERE
+			id = #{id}
+    </update>
+    
+    
+      <!--@author SSY 2018-06-15  更新大货集散首页展示排序  -->
+    <delete id="deleteLargeCargo" parameterType="java.lang.Integer">
+    	DELETE  FROM
+    		aurorascm.home_large_cargo
+    	WHERE
+			id = #{id}
+    </delete>
+    
+    
+   <!--@author SSY 2018-06-15  更新大货集散首页展示排序  -->
+    <update id="updateHomeLCOrder" parameterType="pd">
+    	UPDATE  
+    		aurorascm.home_large_cargo
+    	SET
+    		seat_order = #{homeLCOrder},
+    		update_time = #{updateTime},
+    		updator = #{updator}
+    	WHERE
+			category_id = #{categoryID}
+    </update>
+  
+  
+	<!--@author BYG 2018-5-2  新增商品
+    <insert id="addGoods" parameterType="com.aurora.entity.home.HomeLargeCargo">
+    	INSERT INTO  aurorascm.large_cargo
+    		(category_id,seat,goods_id,goods_show_name,goods_code,price,norm,min_num,
+    			period,delivery_address,hot,supplier,update_time)
+    	VALUES
+    		(#{categoryID},#{seat},#{goodsID},#{goodsShowName},#{goodsCode},#{price},#{norm},#{minNum},
+    			#{period},#{deliveryAddress},#{hot},#{supplier},#{updateTime})
+    </insert>
+         -->
+    <!--@author BYG 2018-5-2  更新商品 
+    <update id="updateGoods" parameterType="com.aurora.entity.home.HomeLargeCargo">
+    	UPDATE  
+    		aurorascm.large_cargo
+    	SET
+    		goods_id = #{goodsID},
+    		goods_show_name = #{goodsShowName},
+    		goods_code = #{goodsCode},
+    		price = #{price},
+    		norm = #{norm},
+    		min_num = #{minNum},
+    		period = #{period},
+    		delivery_address = #{deliveryAddress},
+    		hot = #{hot},
+    		supplier = #{supplier},
+    		update_time = #{updateTime}
+    	WHERE
+			category_id = #{categoryID}
+		AND
+			seat = #{seat}
+    </update>
+    -->
+</mapper>

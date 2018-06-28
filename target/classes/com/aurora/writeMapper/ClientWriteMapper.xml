@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ClientWriteMapper">
+
+ 
+	
+	<!--禁用客户 -->
+	<update id="disableClient" parameterType="pd" >
+		UPDATE
+			aurorascm.sys_customer
+		SET
+ 			customer_status = 4
+ 		WHERE 
+ 			customer_id = #{customerID}
+	</update>
+	
+	<!--启用客户 -->
+	<update id="enabledClient" parameterType="pd" >
+		UPDATE
+			aurorascm.sys_customer
+		SET
+ 			customer_status = 3
+ 		WHERE 
+ 			customer_id = #{customerID}
+	</update>
+	
+	<!-- 给客户添加备注; -->  
+	<update id="updateClientRemark" parameterType="pd" >
+		UPDATE
+			aurorascm.sys_customer
+		SET
+			aurora_remark = CONCAT(aurora_remark,#{remark})
+ 		WHERE 
+ 			customer_id = #{customerID}
+	</update>
+	
+		<!-- 手动确认收货统计购买金额和购买次数 -->
+	<update id="updateSCBuy" parameterType="pd" >
+		UPDATE 
+			aurorascm.sys_customer  
+		SET
+			buy_num = buy_num + #{num},
+			buy_money = buy_money + #{money}
+		WHERE 
+			customer_id = #{customerID}
+	</update>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

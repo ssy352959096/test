@@ -1,0 +1,697 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="GoodsWriteMapper">
+
+	<!-- 字段 -->
+	<sql id="GDField">
+		goods_id,
+		goods_name,
+		goods_code,
+		weight,
+		volume,
+		product_area,
+		property,
+		main_map,
+		map6,
+		advertise_map,
+		goods_describe
+	</sql>
+	<!-- 字段 -->
+	<sql id="GMField">
+		goods_id,
+		ship_type,
+		weight,
+		goods_price1,
+		goods_price2,
+		rnum1,
+		rnum2,
+		rnum3,
+		market_price,
+		jd_price,
+		tb_price,
+		sell_store_num,
+		fake_sales,
+		goods_stock,
+		stock_emergency,
+		deposit,
+		postage_style,
+		large_buy,
+		large_norm,
+		large_min_num,
+		goods_state,
+		norm,
+		Inputer,
+		lnput_time,
+		submit_time,
+		postage_stylen,
+		depositen,
+		exw,
+		discount
+	</sql>
+		<!-- 字段 -->
+	<sql id="GCField">
+		goods_id,
+		goods_name,
+		brand_id,
+		brand_name,
+		ship_type,
+		ship_typen,
+		product_area,
+		category1_id,
+		category1,
+		category2_id,
+		category2,
+		category3_id,
+		category3,
+		keyword1,
+		keyword2,
+		keyword3,
+		keyword4,
+		keyword5,
+		main_map,
+		goods_code
+	</sql>
+	<!-- 字段值 -->
+	<sql id="GDFieldValue">
+		#{goodsID},
+		#{goodsName},
+		#{goodsCode},
+		#{weight},
+		#{volume},
+		#{productArea},
+		#{property},
+		#{mainMap},
+		#{map6},
+		#{advertiseMap},
+		#{goodsDescribe}
+	</sql>
+	<!-- 字段值 -->
+	<sql id="GMFieldValue">
+		#{goodsID},
+		#{shipType},
+		#{weight},
+		#{goodsPrice1},
+		#{goodsPrice2},
+		#{rnum1},
+		#{rnum2},
+		#{rnum3},
+		#{marketPrice},
+		#{jdPrice},
+		#{tbPrice},
+		#{tSellStoreNnum},
+		#{fakeSales},
+		#{goodsStock},
+		#{stockEmergency},
+		#{deposit},
+		#{postageStyle},
+		#{largeBuy},
+		#{largeNorm},
+		#{largeMinNum},
+		#{goodsState},
+		#{norm},
+		#{inputer},
+		#{inputTime},
+		#{submitTime},
+		#{postageStylen},
+		#{depositen},
+		#{exw},
+		#{discount}
+	</sql>
+		<!-- 字段值 -->
+	<sql id="GCFieldValue">
+		#{goodsID},
+		#{goodsName},
+		#{brandID},
+		#{brandName},
+		#{shipType},
+		#{shipTypeN},
+		#{productArea},
+		#{category1ID},
+		#{category1},
+		#{category2ID},
+		#{category2},
+		#{category3ID},
+		#{category3},
+		#{keyword1},
+		#{keyword2},
+		#{keyword3},
+		#{keyword4},
+		#{keyword5},
+		#{mainMap},
+		#{goodsCode}
+	</sql>
+	
+	<!-- SolrGoodsField 字段 -->
+	<sql id="SolrGoodsField">
+		id,
+ 		goods_id,
+ 		goods_code,
+ 		goods_name,
+ 		goods_describe,
+ 		brand_id,
+ 		brand_cname,
+ 		brand_ename,
+ 		trade_type,
+ 		trade_type_name,
+ 		postage_style,
+ 		postage_style_name,
+ 		deposit,
+ 		deposit_name,
+ 		product_area,
+ 		category1_name,
+ 		category2_id,
+ 		category2_name,
+ 		category3_name,
+ 		keyword1,
+ 		keyword2,
+ 		keyword3,
+ 		keyword4,
+ 		keyword5,
+ 		property,
+ 		main_map,
+ 		fake_stock,
+ 		goods_price2,
+ 		currency_unit,
+ 		market_price,
+ 		goods_sales,
+ 		up_time,
+ 		update_time
+	</sql>
+	<!-- SolrGoodsField 字段值 -->
+	<sql id="SolrGoodsFieldValue">
+		#{item.id},
+ 		#{item.goods_id},
+ 		#{item.goods_code},
+ 		#{item.goods_name},
+ 		#{item.goods_describe},
+ 		#{item.brand_id},
+ 		#{item.brand_cname},
+ 		#{item.brand_ename},
+ 		#{item.trade_type},
+ 		#{item.trade_type_name},
+ 		#{item.postage_style},
+ 		#{item.postage_style_name},
+ 		#{item.deposit},
+ 		#{item.deposit_name},
+ 		#{item.product_area},
+ 		#{item.category1_name},
+ 		#{item.category2_id},
+ 		#{item.category2_name},
+ 		#{item.category3_name},
+ 		#{item.keyword1},
+ 		#{item.keyword2},
+ 		#{item.keyword3},
+ 		#{item.keyword4},
+ 		#{item.keyword5},
+ 		#{item.property},
+ 		#{item.main_map},
+ 		#{item.fake_stock},
+ 		#{item.goods_price2},
+ 		#{item.currency_unit},
+ 		#{item.market_price},
+ 		#{item.goods_sales},
+ 		#{item.up_time},
+ 		#{item.update_time}
+	</sql>
+	
+	<!-- @author BYG 2017-12-13 添加商品到 goods_solr表中 -->
+	<insert id="addGoodsToGoodsSolr" parameterType="java.util.List">
+		INSERT INTO
+			aurorascm.goods_solr
+		(
+			<include refid="SolrGoodsField"></include>
+		) VALUES 
+			<foreach collection ="list" item="item" index= "index" separator =",">
+				(
+					<include refid="SolrGoodsFieldValue"></include>
+				)
+			</foreach >
+	</insert>
+	
+	<!-- @author BYG 2018-3-22 删除 goods_solr表中全部数据 -->
+	<delete id="deleteGoodsSolrAll">
+		DELETE 
+		FROM 
+			aurorascm.goods_solr
+	</delete>
+	
+	<!-- @author BYG 2017-12-14 删除单个商品 -->
+	<delete id="deleteSolrGoods" parameterType="String" >
+		DELETE 
+		FROM 
+			aurorascm.goods_solr
+		WHERE 
+			goods_id IN
+				<foreach collection="array" item="goodsID" index="index" open="(" close=")" separator=",">
+           			#{goodsID}
+           		</foreach>
+	</delete>
+	
+	
+	<!-- 添加商品到GD -->
+	<insert id="addGoodsToGD" parameterType="pd" >
+		INSERT INTO
+			aurorascm.goods_details
+		(
+			<include refid="GDField"></include>
+		) VALUES (
+			<include refid="GDFieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 添加商品到GM -->
+	<insert id="addGoodsToGM" parameterType="pd" >
+		INSERT INTO
+			aurorascm.goods_manage
+		(
+			<include refid="GMField"></include>
+		) VALUES (
+			<include refid="GMFieldValue"></include>
+		)
+	</insert>
+	<!-- 添加商品到GD -->
+	<insert id="addGoodsToGC" parameterType="pd" >
+		INSERT INTO
+			aurorascm.goods_common
+		(
+			<include refid="GCField"></include>
+		) VALUES (
+			<include refid="GCFieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 修改单个商品状态 -->
+	<update id="uptadeOGState" parameterType="pd">
+		UPDATE 
+			aurorascm.goods_manage
+		SET
+			<if test = "goodsState =='1'.toString()"><!-- 取消上架操作,更改lnput_time -->
+			lnput_time = #{time},
+			</if>
+			<if test = "goodsState =='2'.toString()"><!-- 上架操作,更改submit_time -->
+			submit_time = #{time},
+			</if>
+			<if test = "goodsState =='6'.toString()"><!-- 下架操作,更改lnput_time -->
+			lnput_time = #{time},
+			down_time = #{time},
+			</if>
+			<if test = "goodsState =='4'.toString()"><!-- 审核通过,更新review_time -->
+			review_time = #{time},
+			up_time = #{time},
+			</if>
+			<if test = "goodsState =='5'.toString()"><!-- 审核未通过,更改review_time -->
+			review_time = #{time},
+			</if>
+			goods_state = #{goodsState}
+		WHERE
+			goods_id = #{goodsID}
+	</update>
+	
+	<!-- 批量更新商品状态 -->
+	<update id="uptadeBatchGState" parameterType="pd">
+		UPDATE 
+			aurorascm.goods_manage
+			SET
+			<if test = "goodsState =='1'.toString()"><!-- 取消上架操作,更改lnput_time -->
+			lnput_time = #{time},
+			</if>
+			<if test = "goodsState =='2'.toString()"><!-- 上架操作,更改submit_time -->
+			submit_time = #{time},
+			</if>
+			<if test = "goodsState =='6'.toString()"><!-- 下架操作,更改lnput_time -->
+			lnput_time = #{time},
+			down_time = #{time},
+			</if>
+			<if test = "goodsState =='4'.toString()"><!-- 审核通过,更新review_time -->
+			review_time = #{time},
+			up_time = #{time},
+			</if>
+			<if test = "goodsState =='5'.toString()"><!-- 审核未通过,更改review_time -->
+			review_time = #{time},
+			</if>
+			goods_state = #{goodsState}
+		WHERE
+			goods_id in
+			<foreach item="item" index="index" collection="ArrayGoodsID" open="(" separator="," close=")">
+            	#{item}
+            </foreach>
+	</update>
+	
+	<!-- 删除单个商品 -->
+	<delete id="deleteOGoods" parameterType="pd" >
+		DELETE 
+			m.*,c.*,d.* ,s.*
+		FROM 
+			aurorascm.goods_manage m
+		INNER JOIN
+			aurorascm.goods_common c
+		ON
+			m.goods_id = c.goods_id
+		INNER JOIN
+			aurorascm.goods_details d
+		ON
+			m.goods_id = d.goods_id
+		LEFT JOIN
+			aurorascm.shop_cart s
+		ON
+			m.goods_id = s.goods_id
+		WHERE 
+			m.goods_id = #{goodsID}
+	</delete>
+
+	<!-- 批量删除商品 -->
+	<delete id="deleteBatchGoods" parameterType="pd" >
+		DELETE 
+			d.*,m.*,c.*,s.*
+		FROM 
+			aurorascm.goods_manage m
+		INNER JOIN
+			aurorascm.goods_common c
+		ON
+			m.goods_id = c.goods_id
+		INNER JOIN
+			aurorascm.goods_details d
+		ON
+			m.goods_id = d.goods_id
+		LEFT JOIN
+			aurorascm.shop_cart s
+		ON
+			m.goods_id = s.goods_id
+		WHERE 
+			m.goods_id in
+				<foreach item="item" index="index" collection="ArrayGoodsID" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+	</delete>
+	
+	<!-- 修改单个商品库存 -->
+	<update id="uptadeOGStock" parameterType="pd">
+		UPDATE 
+			aurorascm.goods_manage
+		SET
+			goods_stock = #{goodsStock}
+		WHERE
+			goods_id = #{goodsID}
+	</update>
+	
+	<!-- 根据商品ID修改单个商品信息 -->
+	<update id="updateGoodsByID" parameterType="pd">
+		UPDATE 
+			aurorascm.goods_manage m
+		INNER JOIN
+			aurorascm.goods_common c
+		ON
+			m.goods_id = c.goods_id
+		INNER JOIN
+			aurorascm.goods_details d
+		ON
+			m.goods_id = d.goods_id
+		SET
+			m.ship_type = #{shipType},
+			m.weight = #{weight},
+			m.goods_price1 = #{goodsPrice1},
+			m.goods_price2 = #{goodsPrice2},
+			m.exw = #{exw},
+			m.discount = #{discount},
+			m.rnum1 = #{rnum1},
+			m.rnum2 = #{rnum2},
+			m.rnum3 = #{rnum3},
+			m.market_price = #{marketPrice},
+			m.jd_price = #{jdPrice},
+			m.tb_price = #{tbPrice},
+			m.sell_store_num = #{tSellStoreNnum},
+			m.fake_sales = #{fakeSales},
+			m.goods_stock = #{goodsStock},
+			m.stock_emergency = #{stockEmergency},
+			m.deposit = #{deposit},
+			m.postage_style = #{postageStyle},
+			m.large_buy = #{largeBuy},
+			m.large_norm = #{largeNorm},
+			m.large_min_num = #{largeMinNum},
+			m.goods_state = #{goodsState},
+			m.norm = #{norm},
+			m.Inputer = #{inputer},
+			m.lnput_time = #{inputTime},
+			m.submit_time = #{submitTime},
+			m.remark = '',
+			m.depositen = #{depositen},
+			m.postage_stylen = #{postageStylen},
+			c.goods_name = #{goodsName},
+			c.brand_id = #{brandID},
+			c.brand_name = #{brandName},
+			c.ship_type = #{shipType},
+			c.ship_typen = #{shipTypeN},
+			c.product_area = #{productArea},
+			c.category1_id = #{category1ID},
+			c.category1 = #{category1},
+			c.category2_id = #{category2ID},
+			c.category2 = #{category2},
+			c.category3_id = #{category3ID},
+			c.category3 = #{category3},
+			c.keyword1 = #{keyword1},
+			c.keyword2 = #{keyword2},
+			c.keyword3 = #{keyword3},
+			c.keyword4 = #{keyword4},
+			c.keyword5 = #{keyword5},
+			c.main_map = #{mainMap},
+			d.goods_name = #{goodsName},
+			d.goods_code = #{goodsCode},
+			d.weight = #{weight},
+			d.volume = #{volume},
+			d.product_area = #{productArea},
+			d.property = #{property},
+			d.main_map = #{mainMap},
+			d.map6 = #{map6},
+			d.advertise_map = #{advertiseMap},
+			d.goods_describe = #{goodsDescribe}
+		WHERE
+			m.goods_id = #{goodsID}
+	</update>
+	
+	<!-- 根据商品ID审核单个商品 -->
+	<update id="updateReviewGoodsByID" parameterType="pd">
+		UPDATE 
+			aurorascm.goods_manage
+		SET
+		<if test="goodsState =='4'.toString()">
+			up_time = #{reviewTime},
+			up_num = up_num + 1,
+			</if>
+			remark = #{remark},
+			goods_state = #{goodsState},
+			reviewer = #{reviewer},
+			review_time = #{reviewTime}
+		WHERE
+			goods_id = #{goodsID}
+	</update>
+
+	<!-- 新增或保存商品属性 -->
+	
+	 <insert id="saveGoodsProperties" parameterType="pd"> 
+
+        <selectKey keyProperty="count" resultType="int" order="BEFORE"> 
+            SELECT 
+            	count(columns_id) AS count 
+            FROM 
+            	aurorascm.goods_column
+            WHERE 
+            	category2_id = #{category2ID} 
+        </selectKey> 
+        <!-- 如果大于0则更新 --> 
+        <if test="count>0"> 
+            UPDATE 
+           		aurorascm.goods_column
+            SET 
+           	 	category2_id = #{category2ID},
+           	 	category2 = #{category2Name},
+			    columns = #{properties}
+            WHERE 
+            	category2_id = #{category2ID} 
+            
+		</if> 
+
+        <!-- 如果等于0则保存 --> 
+        <if test="count==0">
+			INSERT INTO
+				aurorascm.goods_column 
+			(
+				category2_id,category2,columns
+			) VALUES (
+			    #{category2ID}, #{category2Name}, #{properties}
+ 			) 
+        </if> 
+    </insert>
+	
+	
+	<!-- 修改关联商品id -->
+		<update id="saveGoodsRelateID" parameterType="pd">
+		UPDATE 
+			aurorascm.goods_manage
+		SET
+			relate1_gid = #{relateID1},
+			relate2_gid = #{relateID2}
+		WHERE
+			goods_id = #{goodsID}
+	</update>
+	
+	
+		<!-- 修改关联商品id -->
+	<update id="cancelrelateID1" parameterType="String">
+		UPDATE 
+			aurorascm.goods_manage
+		SET
+			relate1_gid = ''
+		WHERE
+			relate1_gid = #{goodsID}
+	</update>
+		<!-- 修改关联商品id -->
+	<update id="cancelrelateID2" parameterType="String">
+		UPDATE 
+			aurorascm.goods_manage
+		SET
+			relate2_gid = ''
+		WHERE
+			relate2_gid = #{goodsID}
+	</update>
+	 
+		<!-- 异常关闭/北极光退款操作  批量增加商品库存至goods_manage -->
+	<update id="addMGStockBatch" parameterType="pd">
+		UPDATE 
+			aurorascm.goods_manage 
+			<set>
+			goods_stock = goods_stock + #{goods_num}
+			 </set>
+			   WHERE  
+			         goods_id = #{goods_id}
+	</update>
+	
+	<!-- 注释原因:异常关闭订单不再恢复,@ssy2017-11-27 
+	 恢复异常关闭订单,减去订单商品库存 -->
+<!-- 	<update id="subMGStockBatch" parameterType="pd">
+		UPDATE 
+			aurorascm.goods_manage
+            SET
+			goods_stock = goods_stock - #{goods_num}
+            WHERE
+              goods_id = #{i.goods_id}
+	</update> -->
+	
+	
+		<!-- 根据商品库存成本id修改该商品该段时间库存;goods_cost_stock -->
+	<update id="updateStockByID" parameterType="pd">
+		UPDATE 
+			aurorascm.goods_cost_stock  
+		SET
+			stock = #{stock}
+		WHERE
+			id = #{id}	
+	</update>
+	
+	<!--  保存新增的商品阶段库存 goods_cost_stock;-->
+	<insert id="saveGoodsCost" parameterType="pd"> 
+		INSERT INTO
+			aurorascm.goods_cost_stock
+		(
+			goods_id,cost_price,buy_num,stock,time,create_operator
+		) 
+		VALUES 
+		(
+			#{goodsID}, #{costPrice}, #{buyNum}, #{buyNum},#{time},#{operator}
+		) 
+    </insert>
+    
+	<!-- 商品阶段成本库存录入;同步添加库存至goods_manage -->
+	<update id="addMGStock" parameterType="pd">
+		UPDATE 
+			aurorascm.goods_manage  
+		SET
+			goods_stock = goods_stock + #{buyNum}
+		WHERE
+			goods_id = #{goodsID}	
+	</update>
+    
+<!-- 已接单订单异常关闭 新增订单商品的阶段库存 goods_cost_stock -->
+	<insert id="saveGoodsCostBatch" parameterType="pd"> 
+		INSERT INTO
+			aurorascm.goods_cost_stock
+		(
+			goods_id,cost_price,buy_num,stock,time,create_operator
+		)	
+		VALUES  
+			( 
+			#{goods_id}, (#{cost_price} / #{goods_num}),#{goods_num},#{goods_num},NOW(),'异常订单关闭新增库存'
+		)
+    </insert>
+    
+    <!-- 接单后同步更新商品销量; -->
+    <update id="updateGoodsSale" parameterType="pd">
+		UPDATE 
+			aurorascm.goods_manage
+		SET
+			goods_sales = goods_sales + #{saleNum}	 
+		WHERE
+			goods_id = #{goods_id}
+	</update>
+      
+    
+<!--     
+	 保存商品利润,营业额 
+    <insert id="saveOrUpdateGPT" parameterType="pd"> 
+
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+				SELECT
+					count(id) AS count
+				FROM
+					aurorascm.data_goods_profit
+				WHERE
+					goods_id = #{goods_id}
+        </selectKey> 
+        如果大于0则更新 
+        <if test="count>0"> 
+            UPDATE 
+           		aurorascm.data_goods_profit
+            SET 
+           	 	total_profit = total_profit + (#{goodsProfit}),
+           	 	total_turnover = total_turnover + (#{goodsTPrice}),
+           	  	${monthp} = ${monthp} + (#{goodsProfit}),
+			    ${montht} = ${montht} + (#{goodsTPrice})
+            WHERE 
+            	goods_id = #{goods_id}
+		</if> 
+
+        如果等于0则保存 
+        <if test="count==0">
+			INSERT INTO
+				aurorascm.data_goods_profit
+			(
+				goods_id,total_profit,total_turnover,${monthp},${montht}
+			) VALUES (
+			    #{goods_id}, #{goodsProfit}, #{goodsTPrice},#{goodsProfit}, #{goodsTPrice}
+ 			) 
+        </if> 
+    </insert>
+
+批量减去商品总销售量;
+	<update id="updateGS" parameterType="pd">
+		UPDATE 
+			aurorascm.data_goods_sale
+		SET
+			   	total_sale = total_sale - #{goods_num}
+				WHERE
+					goods_id = #{goods_id}
+			    
+	</update>
+	
+批量减去商品总营业额和总利润;
+	<update id="updateGPT" parameterType="pd">
+		UPDATE 
+			aurorascm.data_goods_profit
+		SET
+			   		total_turnover = total_turnover - (#{item.goods_price} * #{item.goods_num}),
+			   		total_profit = total_profit - (#{item.goods_price} * #{item.goods_num}*0.881) + #{item.cost_price}
+				WHERE
+					goods_id = #{item.goods_id}
+	</update>
+	 -->
+</mapper>

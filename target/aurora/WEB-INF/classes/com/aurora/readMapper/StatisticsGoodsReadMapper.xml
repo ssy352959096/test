@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="StatisticsGoodsReadMapper">
+
+ <!--@author SSY 条件展示商品统计列表; -->
+	<select id="getGoodsList" parameterType="page" resultType="pd">
+	SELECT 
+		 c.goods_id,c.goods_name,c.category1_id,c.category1,
+			IFNULL((
+				SELECT
+					sum(sgc.total_click_num)
+				FROM
+					aurorascm.s_goods_click sgc 
+				WHERE 
+					sgc.goods_id = c.goods_id 
+				AND 
+					sgc.month != 13
+				GROUP BY  sgc.goods_id
+			),0) as total_click_num
+	FROM 
+		aurorascm.goods_common c
+		WHERE 1=1
+		<if test="pd.goodsName!=null">
+		AND c.goods_name LIKE CONCAT ('%',#{pd.goodsName},'%')
+		</if>
+		<if test="pd.goodsID!=null">
+		AND c.goods_id = #{pd.goodsID}
+		</if>
+		<if test="pd.category!=null">
+		AND c.category1_id = #{pd.category}
+		</if>
+		ORDER BY  total_click_num ${pd.orderAD}
+		LIMIT 
+			#{fromIndex}, #{pageSize}
+	</select>
+	
+	
+	 <!--  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ -->
+	 
+   <!--@author SSY 条件获取商品数量;; -->
+	<select id="getGoodsNum" parameterType="page" resultType="int">
+	SELECT 
+		 count(goods_id) num
+	FROM 
+		aurorascm.goods_common
+	WHERE 1=1
+		<if test="pd.goodsName!=null">
+		AND goods_name LIKE CONCAT ('%',#{pd.goodsName},'%')
+		</if>
+		<if test="pd.goodsID!=null">
+		AND  goods_id = #{pd.goodsID}
+		</if>
+		<if test="pd.category!=null">
+		AND  category1_id = #{pd.category}
+		</if>
+	</select>
+  
+  
+   <!--  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ -->
+	 
+   <!--@author SSY 查询该商品某天日点击总量以及当天的时间分布; -->
+	<select id="getDayClickDistribution" parameterType="pd" resultType="pd">
+	SELECT 
+		c.goods_id,IFNULL(sgc.`day`,#{time})as day,IFNULL(sgc.hour1,0)as hour1,IFNULL(sgc.hour2,0)as hour2,
+			IFNULL(sgc.hour3,0)as hour3,IFNULL(sgc.hour4,0)as hour4,IFNULL(sgc.hour5,0)as hour5,IFNULL(sgc.hour6,0)as hour6,
+			IFNULL(sgc.hour7,0)as hour7,IFNULL(sgc.hour8,0)as hour8,IFNULL(sgc.hour9,0)as hour9,IFNULL(sgc.hour10,0)as hour10,
+			IFNULL(sgc.hour11,0)as hour11,IFNULL(sgc.hour12,0)as hour12,IFNULL(sgc.total_click_num,0)as total_click_num
+	FROM  
+		aurorascm.goods_common c
+	LEFT JOIN
+		(
+			SELECT
+				*
+			FROM
+				aurorascm.s_goods_click  
+			WHERE
+				day = #{time}
+			AND
+				month = '13' 
+		) as sgc
+	ON	
+		c.goods_id = sgc.goods_id
+	WHERE
+ 		c.goods_id = #{goodsID}
+	</select>
+   
+    <!--  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ -->
+	 
+   <!--@author SSY 查询该商品 某天的总点击量; -->
+	<select id="getDayTotalClickNum" parameterType="pd" resultType="pd">
+	
+	SELECT 
+		c.goods_id,IFNULL(sgc.`day`,#{time})as day,IFNULL(sgc.total_click_num,0) as total_click_num
+	FROM  
+		aurorascm.goods_common c
+	LEFT JOIN
+		(
+			SELECT 
+				goods_id,`day`,total_click_num
+			FROM 
+				aurorascm.s_goods_click 
+			WHERE
+				`day` = #{time}
+	 		AND
+				month = '13'
+		) as sgc
+	ON	
+		c.goods_id = sgc.goods_id
+	WHERE
+ 		c.goods_id = #{goodsID}
+	</select>
+	
+   
+    <!--  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ -->
+	 
+   <!--@author SSY 查询商品(如果goodsID不为空,则查询指定商品) 近 X 日以来累计点击总量以及时间分布; -->
+	<select id="getXDayClickDistribution" parameterType="pd" resultType="pd">
+	SELECT 
+		IFNULL(sum(hour1),0) as hour1,IFNULL(sum(hour2),0) as hour2,IFNULL(sum(hour3),0) as hour3,IFNULL(sum(hour4),0) as hour4,
+		IFNULL(sum(hour5),0) as hour5,IFNULL(sum(hour6),0) as hour6,IFNULL(sum(hour7),0) as hour7,IFNULL(sum(hour8),0) as hour8,
+		IFNULL(sum(hour9),0) as hour9, IFNULL(sum(hour10),0) as hour10,IFNULL(sum(hour11),0) as hour11,IFNULL(sum(hour12),0) as hour12,
+		IFNULL(sum(total_click_num),0) as total_click_num
+	FROM 
+		aurorascm.s_goods_click 
+	WHERE
+		day &gt;= #{time}
+		<if test="goodsID!=null">
+		AND goods_id = #{goodsID}
+		</if>
+	AND
+		month = '13'
+	</select>
+	
+	 <!--@author SSY 查询商品(如果goodsID不为空,则查询指定商品) 月度累计点击总量以及时间分布; -->
+	<select id="getMonthClickDistribution" parameterType="pd" resultType="pd">
+	SELECT 
+		IFNULL(sum(hour1),0) as hour1,IFNULL(sum(hour2),0) as hour2,IFNULL(sum(hour3),0) as hour3,IFNULL(sum(hour4),0) as hour4,
+		IFNULL(sum(hour5),0) as hour5,IFNULL(sum(hour6),0) as hour6,IFNULL(sum(hour7),0) as hour7,IFNULL(sum(hour8),0) as hour8,
+		IFNULL(sum(hour9),0) as hour9, IFNULL(sum(hour10),0) as hour10,IFNULL(sum(hour11),0) as hour11,IFNULL(sum(hour12),0) as hour12,
+		IFNULL(sum(total_click_num),0) as total_click_num
+	FROM 
+		aurorascm.s_goods_click 
+	WHERE
+		month = #{month}<!-- YYYY-MM格式 -->
+		<if test="goodsID!=null">
+		AND goods_id = #{goodsID}
+		</if>
+	</select>
+<!--  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ -->
+	    
+	<!-- 统计当前在售商品数 按类目分组 -->
+	<select id="getCategory1ShelfGoodsNum"  resultType="pd">
+	SELECT
+		gc.category_name,gc.category_id,IFNULL(shelf_goods_num,0) as shelf_goods_num
+	FROM
+		aurorascm.goods_category gc
+	LEFT JOIN 
+		(	
+			SELECT 
+				c.category1_id, COUNT(c.category1_id) as shelf_goods_num
+			FROM
+				aurorascm.goods_manage m
+			INNER JOIN 
+				aurorascm.goods_common c
+			ON
+				c.goods_id = m.goods_id
+			WHERE 
+				m.goods_state = 4
+			GROUP BY  c.category1_id
+			ORDER BY c.category1_id ASC
+		) as sss
+	ON 
+		sss.category1_id = gc.category_id
+	WHERE 
+		gc.category_level = 1
+		</select>
+		
+		
+<!--  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ -->
+	    
+	<!-- 统计本月新增商品数 按类目分组-->
+	<select id="getCategory1NewGoods" parameterType="String" resultType="pd">
+	SELECT
+		gc.category_name,gc.category_id,IFNULL(new_goods_num,0) as new_goods_num
+	FROM
+		aurorascm.goods_category gc
+	LEFT JOIN 
+		(	
+			SELECT 
+				c.category1_id ,COUNT(c.category1_id) as new_goods_num
+			FROM
+				aurorascm.goods_manage m
+			INNER JOIN 
+				aurorascm.goods_common c
+			ON
+				c.goods_id = m.goods_id
+			WHERE 
+				m.goods_state = 4
+			AND 
+				m.up_num = 1
+			AND
+				m.up_time LIKE CONCAT(#{monthMM},'%')<!-- 本月 -->
+			GROUP BY  c.category1_id
+		) as sss
+	ON 
+		sss.category1_id = gc.category_id
+	WHERE 
+		gc.category_level = 1
+		</select>
+		
+ 
+		
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="DataReadMapper">
+
+	<!-- 通过商品ID获取商品本站价格数据 -->
+	<select id="getAPriceData" parameterType="String" resultType="pd" >
+		SELECT 
+			*
+		FROM 
+			aurorascm.data_aprice
+		WHERE 
+			goods_id = #{goodsID}
+	</select>
+	<!-- 通过商品ID获取商品京东价格数据 -->
+	<select id="getJPriceData" parameterType="String" resultType="pd" >
+		SELECT 
+			*
+		FROM 
+			aurorascm.data_jprice
+		WHERE 
+			goods_id = #{goodsID}
+	</select>
+	<!-- 通过商品ID获取商品淘宝价格数据 -->
+	<select id="getTPriceData" parameterType="String" resultType="pd" >
+		SELECT 
+			*
+		FROM 
+			aurorascm.data_tprice
+		WHERE 
+			goods_id = #{goodsID}
+	</select>
+	<!-- 通过商品ID获取商品淘宝再买商家数量数据 -->
+	<select id="getTStoreData" parameterType="String" resultType="pd" >
+		SELECT 
+			*
+		FROM 
+			aurorascm.data_ts_num
+		WHERE 
+			goods_id = #{goodsID}
+	</select>
+	
+</mapper>

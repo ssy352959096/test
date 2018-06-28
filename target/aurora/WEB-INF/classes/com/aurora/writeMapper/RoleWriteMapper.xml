@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RoleWriteMapper">
+
+	<!-- 字段 -->
+	<sql id="Field">
+		role_name,
+		role_rights,
+		role_parent_id,
+		role_remark,
+		role_create_time,
+		role_create_user_id
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{roleName},
+		#{roleRights},
+		#{roleParentID},
+		#{roleRemark},
+		#{time},
+		#{createUserID}
+	</sql>
+	
+	<!-- 新增角色保存-->
+	<insert id="saveNewRole" parameterType="pd">
+		INSERT INTO 
+			aurora.sys_role
+		(
+		<include refid="Field"></include>
+		) VALUES (
+		<include refid="FieldValue"></include>	
+		)
+	</insert>
+	
+	<!-- 保存角色修改信息 -->
+	<update id="saveEditRole" parameterType="pd">
+		UPDATE 
+			aurora.sys_role
+		SET
+			role_name = #{roleName},
+			role_rights = #{roleRights},
+			role_parent_id = #{roleParentID},
+			role_remark = #{roleRemark}
+		where
+			role_id = #{roleID}
+	</update>
+	
+	<!-- 根据角色ID删除角色  -->
+	<delete id="deleteRoleByRoleID" parameterType="int">
+		DELETE FROM 
+			aurora.sys_role
+		WHERE 
+			role_id=#{roleID}
+	</delete>
+
+</mapper>

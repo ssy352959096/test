@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SupplyIntentionWriteMapper">
+  
+    <!--@author SSY 2018-05-04 删除全站供应意图-->
+    <delete id="deleteSupplyIntention" parameterType="int">
+    	DELETE  FROM 
+    		aurorascm.supply_intention  
+    	WHERE 
+    		id = #{id}
+    </delete>
+    
+      
+    <!--@author SSY 2018-05-04 删除单个商品供应意图-->
+    <delete id="deleteSupplyGoodsIntention" parameterType="int">
+    	DELETE  FROM 
+    		aurorascm.supply_goods_intention  
+    	WHERE 
+    		id = #{id}
+    </delete>
+    
+</mapper>

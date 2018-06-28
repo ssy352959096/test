@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="GoodsCategoryReadMapper">
+
+	
+	<resultMap type="com.aurora.entity.home.Category" id="CategoryResultMap">
+		<id column="category_id" property="categoryID"/>
+		<result column="category_name" property="categoryName"/>
+		<result column="category_level" property="categoryLevel"/>
+		<result column="category_parent_id" property="categoryParentID"/>
+		<result column="location_sort" property="locationSort"/>
+		<result column="red" property="red"/>
+		<result column="update_time" property="updateTime"/>
+	</resultMap>
+	
+	
+	<!-- @author BYG 2018-04-27 根据级别和父级类目ID获取相应类目列表 -->
+	<select id="getCategoryListByLevelAndPID" parameterType="com.aurora.entity.home.Category" resultMap="CategoryResultMap">
+		SELECT 	*
+		FROM	aurorascm.goods_category
+		WHERE	category_level = #{categoryLevel}
+		<if test=" categoryParentID != null">
+		AND		category_parent_id = #{categoryParentID}
+		</if>
+		ORDER BY	location_sort
+	</select>
+	
+	<!-- @author BYG 2018-04-27  根据级别获取相应类目列表接口-->
+	<select id="getCategoryListByLevel" parameterType="int" resultMap="CategoryResultMap">
+		SELECT 	category_id,category_name,category_level,category_parent_id,location_sort,red
+		FROM	aurorascm.goods_category
+		WHERE	category_level = #{categoryLevel}
+		ORDER BY	location_sort
+	</select>
+	
+	<!-- @author BYG 2018-04-27  根据父级ID获取相应类目列表接口-->
+	<select id="getCategoryListByPID" parameterType="int" resultMap="CategoryResultMap">
+		SELECT 	category_id,category_name,category_level,category_parent_id,location_sort,red
+		FROM	aurorascm.goods_category
+		WHERE	category_parent_id = #{categoryParentID}
+		ORDER BY	location_sort
+	</select>
+	
+	
+	<!-- @author SSY 2018-05-17  查询首页展示一级类目-->
+	<select id="getHomeCategory" parameterType="int" resultMap="CategoryResultMap">
+		SELECT 	category_id,category_name
+		FROM	aurorascm.goods_category
+		WHERE	category_level = #{categoryLevel}
+		AND	category_id IN (${@com.aurora.util.Const@CATEGORYID_FLOORS})
+		ORDER BY	location_sort  ASC
+		LIMIT 0,5
+	</select>
+	
+	
+	
+	
+	
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BrandSmallClassSettingReadMapper">
+	<!-- 字段 -->
+	<sql id="BSCSfields">
+		small_class_id,
+		small_class_state,
+		brand_id,
+		small_class_no,
+		small_class_name,
+		commodity_name,
+		update_time,
+		update_name
+	</sql>
+	<!-- 字段值 -->
+	<sql id="BSCSfieldValues">
+		#{smallClassId},
+		#{smallClassState},
+		#{brandId},
+		#{smallClassNo},
+		#{smallClassName},
+		#{commodityName},
+		#{updateTime},
+		#{updateName}
+	</sql>
+	<!--@author KJH  @date 2018年6月25日 下午5:20:51  根据id删除商品小类信息 -->
+	<delete id="deleteBrandSmallClassSetting" parameterType="java.lang.Integer">
+		DELETE FROM dcc.small_class_info WHERE
+		small_class_id=#{smallClassId}
+	</delete>
+	<!--@author KJH  @date 2018年6月25日 下午5:20:51  添加商品小类信息 -->
+	<insert id="addBrandSmallClassSetting" parameterType="com.aurora.entity.dcc.BrandSmallClassSetting">
+		INSERT INTO dcc.small_class_info(
+		<include refid="BSCSfields"></include>
+		)VALUES(
+		<include refid="BSCSfieldValues"></include>
+		)
+	</insert>
+	<!--@author KJH  @date 2018年6月25日 下午5:20:51   修改商品小类信息 -->
+	<update id="updateBrandSmallClassSetting" parameterType="com.aurora.entity.dcc.BrandSmallClassSetting">
+		UPDATE dcc.small_class_info SET
+		small_class_state=#{smallClassState},
+		brand_id=#{brandId},
+		small_class_no=#{smallClassNo},
+		small_class_name=#{smallClassName},
+		commodity_name=#{commodityName},
+		update_time=#{updateTime},
+		update_name=#{updateName}
+		WHERE
+		small_class_id=#{smallClassId}
+	</update>
+
+</mapper>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="MenuReadMapper">
+
+	<resultMap type="Menu" id="menuResultMap">
+		<id column="menu_id" property="menuID"/>
+		<result column="menu_name" property="menuName"/>
+		<result column="menu_url" property="menuURL"/>
+		<result column="menu_parent_id" property="menuParentID"/>
+		<result column="menu_order" property="menuOrder"/>
+		<result column="menu_level" property="menuLevel"/>
+	</resultMap>
+
+	<!-- 字段 -->
+	<sql id="Field">
+		menu_id,
+ 		menu_name,
+ 		menu_url,
+ 		menu_parent_id,
+ 		menu_order,
+ 		menu_state,
+ 		menu_level
+	</sql>
+
+	<!--通过菜单父级ID获取其子一级菜单 -->
+	<select id="getSubMenuListByMenuParentID" parameterType="int" resultMap="menuResultMap">
+		SELECT  
+			<include refid="Field"></include>
+		FROM 
+			aurora.sys_menu
+		WHERE
+			menu_parent_id = #{menuParentID} 
+		ORDER BY 
+			(menu_order+0)
+	</select>
+	
+	<!-- 默认查询出菜单列表 -->
+	<select id="getMenuList" parameterType="page" resultType="pd" >
+		SELECT
+			<include refid="Field"></include>
+		FROM
+			aurora.sys_menu
+		ORDER BY menu_order
+		LIMIT #{fromIndex}, #{pageSize}
+	</select>
+	
+	<!-- 获取菜单总数 -->
+	<select id="getMenuTotalRecord"  resultType="pd">
+		SELECT 
+			count(menu_id) menuCount
+		FROM 
+			aurora.sys_menu
+	</select>
+	
+	<!-- 查询出所有菜单 -->
+	<select id="getAllMenu" parameterType="pd" resultType="pd" >
+		SELECT
+			<include refid="Field"></include>
+		FROM
+			aurora.sys_menu 
+		ORDER BY menu_id ASC
+	</select>
+	
+	<!-- 条件查询菜单总数 -->
+	<select id="getMenuTotalRecordByCondition" parameterType="page" resultType="pd" >
+		SELECT 
+		COUNT(menu_id) menuCount
+		FROM
+			aurora.sys_menu 
+		WHERE	1=1
+			<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+				AND	menu_name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')	
+			</if>
+			<if test="pd.menuLevel != null and pd.menuLevel != ''"><!-- 菜单级别检索 -->
+				AND menu_level = #{pd.menuLevel} 
+			</if>
+	</select>
+	
+	<!-- 模糊名称/级别查询出所有菜单 -->
+	<select id="getMenuListByCondition" parameterType="page" resultType="pd" >
+		SELECT
+			<include refid="Field"></include>
+		FROM
+			aurora.sys_menu 
+		WHERE	1=1
+			<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+				AND	menu_name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')	
+			</if>
+			<if test="pd.menuLevel != null and pd.menuLevel != ''"><!-- 菜单级别检索 -->
+				AND menu_level = #{pd.menuLevel} 
+			</if>
+		ORDER BY menu_order
+		LIMIT #{fromIndex}, #{pageSize}
+	</select>
+	
+	<!--通过菜单ID获取菜单数据 -->
+	<select id="getMenuByMenuID" parameterType="pd" resultType="pd">
+		SELECT  
+			<include refid="Field"></include>
+		FROM 
+			aurora.sys_menu
+		WHERE
+			menu_id = #{menuID} 
+	</select>
+</mapper>

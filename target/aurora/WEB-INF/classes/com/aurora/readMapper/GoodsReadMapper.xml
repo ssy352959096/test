@@ -1,0 +1,798 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="GoodsReadMapper">
+
+<resultMap type="GoodsManage" id="goodsDMResultMap">
+		<id column="goods_id" property="goodsID"/>
+		<result column="relate1_gid" property="relate1GID"/>
+		<result column="relate2_gid" property="relate2GID"/>
+		<result column="ship_type" property="shipType"/>
+		<result column="goods_price1" property="goodsPrice1"/>
+		<result column="goods_price2" property="goodsPrice2"/>
+		<result column="rnum1" property="rnum1"/>
+		<result column="rnum2" property="rnum2"/>
+		<result column="rnum3" property="rnum3"/>
+		<result column="goods_sales" property="goodsSales"/>
+		<result column="fake_sales" property="fakeSales"/>
+		<result column="goods_stock" property="goodsStock"/>
+		<result column="stock_emergency" property="stockEmergency"/>	
+		<result column="deposit" property="deposit"/>
+		<result column="weight" property="weight"/>
+	<!-- 	<result column="postage" property="postage"/> -->
+		<result column="postage_style" property="postageStyle"/>
+		<result column="market_price" property="marketPrice"/>
+		<result column="jd_price" property="jdPrice"/>
+		<result column="tb_price" property="tbPrice"/>
+		<result column="sell_store_num" property="sellStoreNum"/>
+		<result column="goods_state" property="goodsState"/>
+		<result column="Inputer" property="inputer"/>
+		<result column="reviewer" property="reviewer"/>
+		<result column="lnput_time" property="inputTime"/>
+		<result column="submit_time" property="submitTime"/>
+		<result column="review_time" property="reviewTime"/>
+		<result column="up_time" property="upTime"/>
+		<result column="down_time" property="downTime"/>
+		<result column="remark" property="remark"/>
+		<result column="large_buy" property="largeBuy"/>
+		<result column="large_norm" property="largeNorm"/>
+		<result column="large_min_num" property="largeMinNum"/>
+		<result column="norm" property="norm"/>
+		<result column="exw" property="exw"/>
+		<result column="discount" property="discount"/>
+		<association property="goodsDetails" column="goods_id" javaType="GoodsDetails">
+			<id column="goods_id" property="goodsID"/>
+			<result column="goods_name" property="goodsName"/>
+			<result column="goods_code" property="goodsCode"/>
+			<result column="weight" property="weight"/>
+			<result column="volume" property="volume"/>
+			<result column="product_area" property="productArea"/>
+			<result column="property" property="property"/>
+			<result column="main_map" property="mainMap"/>
+			<result column="map6" property="map6"/>
+			<result column="advertise_map" property="advertiseMap"/>
+			<result column="goods_describe" property="describe"/>
+		</association>
+		<association property="goodsCommon" column="goods_id" javaType="GoodsCommon">
+			<id column="goods_id" property="goodsID"/>
+			<result column="brand_id" property="brandID"/>
+			<result column="brand_name" property="brandName"/>
+			<result column="category1_id" property="category1ID"/>
+			<result column="category1" property="category1"/>
+			<result column="category2_id" property="category2ID"/>
+			<result column="category2" property="category2"/>
+			<result column="category3_id" property="category3ID"/>
+			<result column="category3" property="category3"/>
+			<result column="keyword1" property="keyword1"/>
+			<result column="keyword2" property="keyword2"/>
+			<result column="keyword3" property="keyword3"/>
+			<result column="keyword4" property="keyword4"/>
+			<result column="keyword5" property="keyword5"/>
+		</association>
+	</resultMap>
+	
+	<resultMap type="com.aurora.entity.home.GoodsSolr" id="GoodsSolrResultMap">
+		<id column="id" property="id"/>
+		<result column="goods_id" property="goods_id"/>
+		<result column="goods_code" property="goods_code"/>
+		<result column="goods_name" property="goods_name"/>
+		<result column="goods_describe" property="goods_describe"/>
+		<result column="brand_id" property="brand_id"/>
+		<result column="brand_cname" property="brand_cname"/>
+		<result column="brand_ename" property="brand_ename"/>
+		<result column="trade_type" property="trade_type"/>
+		<result column="trade_type_name" property="trade_type_name"/>
+		<result column="postage_style" property="postage_style"/>
+		<result column="postage_style_name" property="postage_style_name"/>
+		<result column="deposit" property="deposit"/>
+		<result column="deposit_name" property="deposit_name"/>
+		<result column="product_area" property="product_area"/>
+		<result column="category1_name" property="category1_name"/>
+		<result column="category2_id" property="category2_id"/>
+		<result column="category2_name" property="category2_name"/>
+		<result column="category3_name" property="category3_name"/>
+		<result column="keyword1" property="keyword1"/>
+		<result column="keyword2" property="keyword2"/>	
+		<result column="keyword3" property="keyword3"/>
+		<result column="keyword4" property="keyword4"/>
+		<result column="keyword5" property="keyword5"/>
+		<result column="property" property="property"/>
+		<result column="main_map" property="main_map"/>
+		<result column="fake_stock" property="fake_stock"/>
+		<result column="goods_price2" property="goods_price2"/>
+		<result column="currency_unit" property="currency_unit"/>
+		<result column="market_price" property="market_price"/>
+		<result column="goods_sales" property="goods_sales"/>
+		<result column="up_time" property="up_time"/>
+		<result column="update_time" property="update_time"/>
+	</resultMap>
+	
+	<!-- SolrGoodsField 字段 -->
+	<sql id="SolrGoodsField">
+		id,
+ 		goods_id,
+ 		goods_code,
+ 		goods_name,
+ 		goods_describe,
+ 		brand_id,
+ 		brand_cname,
+ 		brand_ename,
+ 		trade_type,
+ 		trade_type_name,
+ 		postage_style,
+ 		postage_style_name,
+ 		deposit,
+ 		deposit_name,
+ 		product_area,
+ 		category1_name,
+ 		category2_id,
+ 		category2_name,
+ 		category3_name,
+ 		keyword1,
+ 		keyword2,
+ 		keyword3,
+ 		keyword4,
+ 		keyword5,
+ 		property,
+ 		main_map,
+ 		fake_stock,
+ 		goods_price2,
+ 		currency_unit,
+ 		market_price,
+ 		goods_sales,
+ 		up_time,
+ 		update_time
+	</sql>
+	
+	<!-- 获取商品一级类目信息 -->
+	<select id="getGoodsCategory" parameterType="String" resultType="pd">
+		SELECT
+			category_id,
+			category_name,
+			category_parent_id,
+			category_level
+		FROM
+			aurorascm.goods_category
+		WHERE
+			category_parent_id = #{categoryID}
+	</select> 
+	
+	
+	<!-- 根据商品二级类目ID获取商品对应属性-->
+	<select id="getGoodsColumns" parameterType="pd" resultType="pd">
+		SELECT
+			columns_id,
+			category2_id,
+			columns
+		FROM
+			aurorascm.goods_column
+		WHERE
+			category2_id = #{category2ID}
+	</select>
+	
+	<!-- 条件查询相应未上价商品 -->
+	<select id="getGoodsByS5" parameterType="page" resultType="pd" >
+		SELECT
+			d.goods_name,
+			d.goods_code,
+			m.goods_id,
+			m.goods_price1,
+			m.goods_price2,
+			m.rnum1,
+			m.rnum2,
+			m.rnum3,
+			m.lnput_time,
+			m.submit_time,
+			m.review_time,
+			m.remark
+		FROM
+			aurorascm.goods_manage m
+		INNER JOIN
+			aurorascm.goods_details d
+		ON 
+			m.goods_id = d.goods_id
+		INNER JOIN
+			aurorascm.goods_common c
+		ON 
+			m.goods_id = c.goods_id
+		WHERE
+			m.goods_state IN
+				<foreach collection="pd.goodsStates" item="item" index="index" open="(" close=")" separator=",">
+           			#{item}
+           			</foreach>
+			<if test=" pd.category1ID != null">
+				AND		c.category1_id = #{pd.category1ID}
+			</if>
+			<if test=" pd.keyWord != null">
+				AND	(	c.goods_name LIKE CONCAT(CONCAT('%', #{pd.keyWord}),'%')
+				OR		c.goods_id = #{pd.keyWord})
+			</if>
+		ORDER BY
+			m.${pd.orderColumn} ${pd.orderAD}
+		LIMIT 
+			#{fromIndex}, #{pageSize}
+	</select>
+	
+	<!-- 未上架商品条件查询结果商品总数 -->
+	<select id="getGoodsNum"  parameterType="page" resultType="pd">
+		SELECT 
+			count(m.goods_id) num
+		FROM
+			aurorascm.goods_manage m
+		INNER JOIN
+			aurorascm.goods_details d
+		ON 
+			m.goods_id = d.goods_id
+		INNER JOIN
+			aurorascm.goods_common c
+		ON 
+			m.goods_id = c.goods_id
+		WHERE
+				m.goods_state IN
+				<foreach collection="pd.goodsStates" item="item" index="index" open="(" close=")" separator=",">
+           			#{item}
+           			</foreach>
+			<if test=" pd.category1ID != null">
+				AND		c.category1_id = #{pd.category1ID}
+			</if>
+			<if test=" pd.keyWord != null">
+				AND			(	c.goods_name LIKE CONCAT(CONCAT('%', #{pd.keyWord}),'%')
+				OR		c.goods_id = #{pd.keyWord})
+			</if>
+	</select>
+
+	<!-- 根据商品状态得到商品数量 -->
+	<select id="getGoodsNumByState"  parameterType="String" resultType="int">
+		SELECT 
+			count(goods_id) num
+		FROM
+			aurorascm.goods_manage
+		WHERE
+			goods_state = #{state}
+	</select>
+
+	<!-- 删除单个商品前check商品 -->
+	<select id="checkExistGoods"  parameterType="pd" resultType="pd">
+				  SELECT goods_id FROM aurorascm.home_hb_sell	WHERE goods_id = #{goodsID}
+		UNION ALL SELECT goods_id FROM aurorascm.home_hot_sell	WHERE goods_id = #{goodsID}
+		UNION ALL SELECT goods_id FROM aurorascm.home_large_buy	WHERE goods_id = #{goodsID}
+		UNION ALL SELECT goods_id FROM aurorascm.home_less_buy	WHERE goods_id = #{goodsID}
+		UNION ALL SELECT goods_id FROM aurorascm.home_new_goods	WHERE goods_id = #{goodsID}
+		UNION ALL SELECT goods_id FROM aurorascm.home_tj_sell	WHERE goods_id = #{goodsID}
+	</select>
+	
+	<!-- 批量删除商品前check商品 -->
+	<select id="batchCheckExistGoods"  parameterType="pd" resultType="pd">
+				  SELECT goods_id FROM aurorascm.home_hb_sell	WHERE goods_id in
+						<foreach item="item" index="index" collection="ArrayGoodsID" open="(" separator="," close=")">
+			                  #{item}
+			            </foreach>
+		UNION ALL SELECT goods_id FROM aurorascm.home_hot_sell	WHERE goods_id in
+						<foreach item="item" index="index" collection="ArrayGoodsID" open="(" separator="," close=")">
+			                  #{item}
+			            </foreach>
+		UNION ALL SELECT goods_id FROM aurorascm.home_large_buy	WHERE goods_id in
+						<foreach item="item" index="index" collection="ArrayGoodsID" open="(" separator="," close=")">
+			                  #{item}
+			            </foreach>
+		UNION ALL SELECT goods_id FROM aurorascm.home_less_buy	WHERE goods_id in
+						<foreach item="item" index="index" collection="ArrayGoodsID" open="(" separator="," close=")">
+			                  #{item}
+			            </foreach>
+		UNION ALL SELECT goods_id FROM aurorascm.home_new_goods	WHERE goods_id in
+						<foreach item="item" index="index" collection="ArrayGoodsID" open="(" separator="," close=")">
+			                  #{item}
+			            </foreach>
+		UNION ALL SELECT goods_id FROM aurorascm.home_tj_sell	WHERE goods_id in
+						<foreach item="item" index="index" collection="ArrayGoodsID" open="(" separator="," close=")">
+			                  #{item}
+			            </foreach>
+	</select>
+	
+	<!-- 条件查询相应已上价商品 -->
+	<select id="getShelvesGByS5" parameterType="page" resultType="pd" >
+		SELECT
+			d.goods_name,
+			d.goods_code,
+			m.goods_id,
+			m.goods_stock,
+			m.goods_price1,
+			m.goods_price2,
+			m.rnum1,
+			m.rnum2,
+			m.rnum3,
+			m.review_time,
+			m.relate1_gid,
+			m.relate2_gid
+		FROM
+			aurorascm.goods_manage m
+		INNER JOIN
+			aurorascm.goods_details d
+		ON 
+			m.goods_id = d.goods_id
+		INNER JOIN
+			aurorascm.goods_common c
+		ON 
+			m.goods_id = c.goods_id
+		WHERE
+			m.goods_state = '4'
+			<if test=" pd.category1ID != null">
+				AND		c.category1_id = #{pd.category1ID}
+			</if>
+			<if test=" pd.keyWord != null">
+				AND		(c.goods_name LIKE CONCAT(CONCAT('%', #{pd.keyWord}),'%')
+				OR 		c.goods_id = #{pd.keyWord})
+			</if>
+			<if test=" pd.shipType != null">
+				AND		m.ship_type = #{pd.shipType}
+			</if>
+			<if test=" pd.minPrice != null">
+				AND		m.goods_price1 &gt;= #{pd.minPrice}
+			</if>
+			<if test=" pd.maxPrice != null">
+				AND		m.goods_price2 &lt;= #{pd.maxPrice}
+			</if>
+		ORDER BY
+			m.${pd.orderColumn} ${pd.orderAD}
+		LIMIT 
+			#{fromIndex}, #{pageSize}
+	</select>
+	
+	<!-- 已上架商品条件查询结果商品总数 -->
+	<select id="getShelvesGNum"  parameterType="page" resultType="pd">
+		SELECT 
+			count(m.goods_id) num
+		FROM
+			aurorascm.goods_manage m
+		INNER JOIN
+			aurorascm.goods_details d
+		ON 
+			m.goods_id = d.goods_id
+		INNER JOIN
+			aurorascm.goods_common c
+		ON 
+			m.goods_id = c.goods_id
+		WHERE
+			m.goods_state = '4'
+			<if test=" pd.category1ID != null">
+				AND		c.category1_id = #{pd.category1ID}
+			</if>
+			<if test=" pd.keyWord != null">
+				AND		(c.goods_name LIKE CONCAT(CONCAT('%', #{pd.keyWord}),'%')
+				OR 		c.goods_id = #{pd.keyWord})
+			</if>
+			<if test=" pd.shipType != null">
+				AND		m.ship_type = #{pd.shipType}
+			</if>
+			<if test=" pd.minPrice != null">
+				AND		m.goods_price1 &gt;= #{pd.minPrice}
+			</if>
+			<if test=" pd.maxPrice != null">
+				AND		m.goods_price2 &lt;=  #{pd.maxPrice}
+			</if>
+	</select>
+	
+	<!-- 根据商品ID获取商品信息 -->
+	<select id="getGoodsByID"  parameterType="String" resultType="pd">
+		SELECT 
+			m.goods_id,
+			m.relate1_gid,
+			m.relate2_gid,
+			m.ship_type,
+			m.goods_price1,
+			m.goods_price2,
+			m.rnum1,
+			m.rnum2,
+			m.rnum3,
+			m.market_price,
+			m.jd_price,
+			m.tb_price,
+			m.sell_store_num,
+			m.goods_sales,
+			m.fake_sales,
+			m.goods_state,
+			m.goods_stock,
+			m.stock_emergency,
+			m.deposit,
+			m.postage_style,
+			m.large_buy,
+			m.norm,
+			m.Inputer,
+			m.reviewer,
+			m.lnput_time,
+			m.submit_time,
+			m.review_time,
+			m.up_time,
+			m.down_time,
+			m.remark,
+			c.goods_name,
+			c.brand_id,
+			c.brand_name,
+			c.category1_id,
+			c.category1,
+			c.category2_id,
+			c.category2,
+			c.category3_id,
+			c.category3,
+			c.keyword1,
+			c.keyword2,
+			c.keyword3,
+			c.keyword4,
+			c.keyword5,
+			d.goods_code,
+			d.weight,
+			d.volume,
+			d.product_area,
+			d.property,
+			d.main_map,
+			d.map6,
+			d.advertise_map,
+			d.goods_describe
+		FROM
+			aurorascm.goods_manage m
+		INNER JOIN
+			aurorascm.goods_details d
+		ON 
+			m.goods_id = d.goods_id
+		INNER JOIN
+			aurorascm.goods_common c
+		ON 
+			m.goods_id = c.goods_id
+		WHERE
+			m.goods_id = #{goodsID}	
+	</select>
+	
+	<!-- 通过商品ID获取商品详情信息 -->
+	<select id="getGoodsDM" parameterType="String" resultMap="goodsDMResultMap">
+		SELECT 
+			m.*,
+			d.*,
+			c.goods_id,
+			c.brand_id,
+			c.brand_name,
+			c.category1_id,
+			c.category1,
+			c.category2_id,
+			c.category2,
+			c.category3_id,
+			c.category3,
+			c.keyword1,
+			c.keyword2,
+			c.keyword3,
+			c.keyword4,
+			c.keyword5
+		FROM 
+			aurorascm.goods_manage m
+		INNER JOIN
+			aurorascm.goods_details d
+		ON
+			d.goods_id = m.goods_id
+		INNER JOIN
+			aurorascm.goods_common c
+		ON
+			m.goods_id = c.goods_id
+		WHERE 
+			m.goods_id = #{goodsID}
+	</select>
+	 
+	<!--  @author SSY 根据二级类目ID集合查询该类目下的商品属性 -->
+	<select id="getGoodsProperties" parameterType="String" resultType="pd">
+	
+		SELECT 
+			*
+		FROM  
+			aurorascm.goods_category cat
+		LEFT JOIN
+			aurorascm.goods_column col
+		ON
+			cat.category_id = col.category2_id
+		WHERE 
+			cat.category_id = #{category2ID}
+	</select>
+	
+	<!-- 弧度 -->
+	<select id="getAllProperties" parameterType="page" resultType="pd">
+		SELECT 
+			cat.category_id,
+			cat.category_name,
+			col.columns
+		FROM  
+			aurorascm.goods_category cat
+		LEFT JOIN
+			aurorascm.goods_column col
+		ON
+			cat.category_id = col.category2_id
+		WHERE 
+			cat.category_level = 2
+			<if test="pd.category1ID!=null">
+		AND
+			cat.category_parent_id = #{pd.category1ID}
+			</if>
+			<if test="pd.category2ID!=null">
+		AND
+			cat.category_id = #{pd.category2ID}
+			</if>
+		ORDER BY
+			cat.category_id ASC
+		LIMIT 
+			#{fromIndex}, #{pageSize}	
+	</select>
+	
+	<select id="getAllPropertiesNum" parameterType="page" resultType="int">
+		SELECT 
+			count(category_id)
+		FROM  
+			aurorascm.goods_category cat
+		LEFT JOIN
+			aurorascm.goods_column col
+		ON
+			cat.category_id = col.category2_id
+		WHERE 
+			cat.category_level = 2
+			<if test="pd.category1ID!=null">
+		AND
+			cat.category_parent_id = #{pd.category1ID}
+			</if>
+			<if test="pd.category2ID!=null">
+		AND
+			cat.category_id = #{pd.category2ID}
+			</if>
+	</select>
+	
+	<!-- 根据商品id集合 查询不为0的库存成本 -->
+	<select id="getCSByGoodsID" parameterType="String" resultType="pd">
+		SELECT 
+			goods_id,cost_price,stock,id
+		FROM  
+			aurorascm.goods_cost_stock  
+		WHERE 
+			stock != 0
+		AND
+			goods_id = #{goodsID}
+		ORDER BY 
+			time  ASC
+	</select>
+	
+	<!-- 条件查询阶段成本商品数量; -->
+	<select id="getGoodsCostNum" parameterType="page"  resultType="int">
+		SELECT 
+			 count(m.goods_id) num
+		FROM
+			aurorascm.goods_manage m
+		INNER JOIN
+			aurorascm.goods_common c
+		ON 
+			c.goods_id = m.goods_id
+		WHERE 1=1
+		<if test="pd.stock!=null and pd.stock=='2'.toString()"><!-- 已录 -->
+		AND (select sum(gcs.stock) from aurorascm.goods_cost_stock gcs WHERE m.goods_id = gcs.goods_id) &gt; 0
+		</if>
+		<if test="pd.stock!=null and pd.stock=='1'.toString()"><!-- 未录或库存不足 -->
+		AND (select sum(gcs.stock) from aurorascm.goods_cost_stock gcs WHERE m.goods_id = gcs.goods_id)=0
+		OR m.goods_id NOT IN(select gcs.goods_id from aurorascm.goods_cost_stock gcs)
+		</if>
+		<if test="pd.keyword!=null">
+		AND 
+			c.goods_id = #{pd.keyword}
+		OR
+			c.goods_name LIKE CONCAT('%',#{pd.keyword},'%')
+		</if>
+		<if test="pd.beginTime!=null">
+		AND 
+			m.lnput_time &gt;= #{pd.beginTime}
+		</if>
+		<if test="pd.endTime!=null">
+		AND 
+			m.lnput_time &lt;= #{pd.endTime}
+		</if>
+		<if test="pd.shipType!=null">
+		AND 
+			m.ship_type = #{pd.shipType}
+		</if>
+		ORDER BY
+			m.lnput_time desc
+	</select>
+	
+	<!-- 条件查询商品阶段成本列表 -->
+	<select id="getMCGoods" parameterType="page" resultType="pd">
+		SELECT 
+			 m.norm,m.goods_id,m.ship_type,c.goods_name 
+		FROM
+			aurorascm.goods_manage m
+		INNER JOIN
+			aurorascm.goods_common c
+		ON 
+			c.goods_id = m.goods_id
+		WHERE 1=1
+		<if test="pd.stock!=null and pd.stock=='2'.toString()"><!-- 已录 -->
+		AND (select sum(gcs.stock) from aurorascm.goods_cost_stock gcs WHERE m.goods_id = gcs.goods_id) &gt; 0
+		</if>
+		<if test="pd.stock!=null and pd.stock=='1'.toString()"><!-- 未录或库存不足 -->
+		AND (select sum(gcs.stock) from aurorascm.goods_cost_stock gcs WHERE m.goods_id = gcs.goods_id)=0
+		OR m.goods_id NOT IN(select gcs.goods_id from aurorascm.goods_cost_stock gcs)
+		</if>
+		<if test="pd.keyword!=null">
+		AND 
+			(c.goods_id = #{pd.keyword}
+		OR
+			c.goods_name LIKE CONCAT('%',#{pd.keyword},'%'))
+		</if>
+		<if test="pd.beginTime!=null">
+		AND 
+			m.lnput_time &gt;= #{pd.beginTime}
+		</if>
+		<if test="pd.endTime!=null">
+		AND 
+			m.lnput_time &lt;= #{pd.endTime}
+		</if>
+		<if test="pd.shipType!=null">
+		AND 
+			m.ship_type = #{pd.shipType}
+		</if>
+		ORDER BY
+			m.lnput_time desc
+		LIMIT 
+			#{fromIndex}, #{pageSize}
+	</select>
+	
+	<!-- 根据商品id查询该商品所有阶段成本 -->
+	<select id="getGoodsCostList" parameterType="String" resultType="pd">
+		SELECT 
+			*
+		FROM 
+			aurorascm.goods_cost_stock
+		WHERE
+			goods_id = #{goodsID}
+	</select>
+	
+	<!-- 根据商品id查询该商品库存不为0的成本,唯一 -->
+	<select id="getGoodsCostPrice" parameterType="String" resultType="String">
+		SELECT 
+			cost_price
+		FROM 
+			aurorascm.goods_cost_stock
+		WHERE
+			goods_id = #{goodsID}
+		AND
+			stock!= 0
+		ORDER BY
+			time asc
+		LIMIT 0,1
+	</select>
+	
+		<!-- 查询所有商品总数 -->
+	<select id="getAllGoodsNum"  resultType="int">
+		SELECT 
+			count(distinct goods_id) num
+		FROM 
+			aurorascm.goods_manage
+	</select>
+	
+		<!-- 查询录入成本的商品数量 -->
+	<select id="getGoodsNumByCostIn"  resultType="int">
+		SELECT 
+			count(distinct goods_id) num
+		FROM 
+			aurorascm.goods_cost_stock
+	</select>
+	
+		<!-- 根据商品id查询商品的阶段成本; -->
+	<select id="getGCById"  parameterType="String"  resultType="pd">
+		SELECT 
+			 gcs.*,m.rnum1,m.rnum2,m.rnum3
+		FROM 
+			aurorascm.goods_cost_stock gcs
+		INNER JOIN
+			aurorascm.goods_manage m
+		ON 
+			m.goods_id = gcs.goods_id
+		WHERE
+			gcs.goods_id = #{goodsID}
+	</select>
+	
+	<!-- @author BYG 2018-04-26 根据商品id查询商品名称和主图 -->
+	<select id="getGoodsInfoByID"  parameterType="String"  resultType="pd">
+		SELECT		d.goods_id,d.goods_name,d.goods_code,d.main_map,m.norm
+		FROM 		aurorascm.goods_details d
+		INNER JOIN  aurorascm.goods_manage m
+		ON 			d.goods_id = m.goods_id
+		WHERE		d.goods_id = #{goodsID}
+	</select>
+	
+	<!-- @author BYG 2017-12-13  根据商品ID获取商品信息，仅用于solr中商品信息管理 m.norm as currency_unit凑字段，无意义-->
+	<select id="getGoodsForSolr" parameterType="String" resultMap="GoodsSolrResultMap" >
+		SELECT
+	 		m.goods_id,
+	 		m.postage_style,
+	 		m.deposit,
+	 		m.goods_stock as fake_stock,
+	 		m.goods_price2,
+	 		m.market_price,
+	 		m.goods_sales,
+	 		m.up_time,
+	 		m.norm as currency_unit,
+	 		c.goods_code,
+	 		c.goods_name,
+	 		d.goods_describe,
+	 		c.brand_id,
+	 		c.brand_name as brand_cname,
+	 		c.brand_name as brand_ename,
+	 		c.ship_type as trade_type,
+	 		c.ship_typen as trade_type_name,
+	 		c.product_area,
+	 		c.category1 as category1_name,
+	 		c.category2_id,
+	 		c.category2 as category2_name,
+	 		c.category3 as category3_name,
+	 		c.keyword1,
+	 		c.keyword2,
+	 		c.keyword3,
+	 		c.keyword4,
+	 		c.keyword5,
+	 		c.main_map,
+	 		d.property
+
+		FROM
+			aurorascm.goods_manage m
+		INNER JOIN
+			aurorascm.goods_common c
+		ON 
+			m.goods_id = c.goods_id
+		INNER JOIN
+			aurorascm.goods_details d
+		ON 
+			m.goods_id = d.goods_id
+		WHERE
+			m.goods_id IN
+				<foreach collection="array" item="goodsID" index="index" open="(" close=")" separator=",">
+           			#{goodsID}
+           		</foreach>
+	</select>
+	
+	<!-- @author BYG 2017-3-22  获取全部已上架商品信息，仅用于solr中商品信息管理 -->
+	<select id="getAllShelvesGoodsForSolr" resultMap="GoodsSolrResultMap" >
+		SELECT
+	 		m.goods_id,
+	 		m.postage_style,
+	 		m.deposit,
+	 		m.goods_stock as fake_stock,
+	 		m.goods_price2,
+	 		m.market_price,
+	 		m.goods_sales,
+	 		m.up_time,
+	 		m.norm as currency_unit,
+	 		c.goods_code,
+	 		c.goods_name,
+	 		d.goods_describe,
+	 		c.brand_id,
+	 		c.brand_name as brand_cname,
+	 		c.brand_name as brand_ename,
+	 		c.ship_type as trade_type,
+	 		c.ship_typen as trade_type_name,
+	 		c.product_area,
+	 		c.category1 as category1_name,
+	 		c.category2_id,
+	 		c.category2 as category2_name,
+	 		c.category3 as category3_name,
+	 		c.keyword1,
+	 		c.keyword2,
+	 		c.keyword3,
+	 		c.keyword4,
+	 		c.keyword5,
+	 		c.main_map,
+	 		d.property
+		FROM
+			aurorascm.goods_manage m
+		INNER JOIN
+			aurorascm.goods_common c
+		ON 
+			m.goods_id = c.goods_id
+		INNER JOIN
+			aurorascm.goods_details d
+		ON 
+			m.goods_id = d.goods_id
+		WHERE
+			m.goods_state = 4
+	</select>
+	
+</mapper>

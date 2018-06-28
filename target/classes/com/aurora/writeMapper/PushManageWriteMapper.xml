@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="PushManageWriteMapper">
+
+	<!-- SSY 批量更新到货提醒 状态为已推送-->
+	
+	<update id="updatePushArrival" parameterType="pd">
+		UPDATE 
+			aurorascm.push_arrival
+		SET
+			push_state = 2,
+			push_time = #{time},
+			push_operator = #{operator}
+		WHERE
+			id IN
+			<foreach collection="idArray" item = "item" index="index"
+				open="(" separator="," close=")">
+			 #{item}
+			 </foreach>
+	</update>
+	
+    
+    
+    
+</mapper>

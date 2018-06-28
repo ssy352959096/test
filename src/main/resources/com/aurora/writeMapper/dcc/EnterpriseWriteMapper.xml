@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="EnterpriseWriteMapper">
+	<!-- 字段 -->
+	<sql id="EnterpriseFields">
+		enterprise_id,
+		enterprise_name,
+		advantage_brand,
+		product_subclass,
+		account_period_star,
+		account_period_end,
+		currency,
+		trand_mode,
+		cooperation_degree,
+		country,
+		region,
+		street,
+		purchase_user,
+		update_time,
+		update_name
+	</sql>
+	<!-- 字段值 -->
+	<sql id="EnterpriseFieldValues">
+		#{enterpriseId},
+		#{enterpriseName},
+		#{advantageBrand},
+		#{productSubclass},
+		#{accountPeriodStar},
+		#{accountPeriodEnd},
+		#{currency},
+		#{trandMode},
+		#{cooperationDegree},
+		#{country},
+		#{region},
+		#{street},
+		#{purchaseUser},
+		#{updateTime},
+		#{updateName}
+	</sql>
+	<!-- @author KJH  @date 2018年6月25日 下午7:11:37  新增企业信息 -->
+	<insert id="addEnterPriseInFo" parameterType="com.aurora.entity.dcc.Enterprise">
+		INSERT INTO dcc.enterprise_info(
+		<include refid="EnterpriseFields"></include>
+		) VALUES(
+		<include refid="EnterpriseFieldValues"></include>
+		)
+	</insert>
+	<!-- @author KJH  @date 2018年6月25日 下午7:11:37  修改企业信息 -->
+	<update id="updateEnterPriseInFo" parameterType="com.aurora.entity.dcc.Enterprise">
+	   UPDATE dcc.enterprise_info SET	  
+		advantage_brand=#{enterpriseId},
+		product_subclass=#{productSubclass},
+		account_period_star=#{accountPeriodStar},
+		account_period_end=#{accountPeriodEnd},
+		currency=#{currency},
+		trand_mode=#{trandMode},
+		cooperation_degree=#{cooperationDegree},
+		country=#{country},
+		region=#{region},
+		street=#{street},
+		purchase_user=#{purchaseUser},
+		update_time=#{updateTime},
+		update_name=#{updateName}
+	    WHERE
+	    enterprise_id=#{enterpriseId}
+	</update>
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MicroCapsuleWriteMapper">
+
+	<!-- author SSY 2018-06-27 定时更新微仓商品免仓期-->
+	
+	<update id="updateFreeDemurrage"  >
+		UPDATE 
+			aurorascm.mw_goods
+		SET
+			free_day = free_day - 1 
+		WHERE
+			free_day &gt; 0
+	</update>
+</mapper>

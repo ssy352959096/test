@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserReadMapper">
+
+	<resultMap type="User" id="userAndRoleResultMap">
+		<id column="user_id" property="userID"/>
+		<result column="user_name" property="userName"/>
+		<result column="user_mobile" property="userMobile"/>
+		<result column="user_password" property="userPassword"/>
+		<result column="user_real_name" property="userRealName"/>
+		<result column="user_last_login_time" property="userLastLoginTime"/>
+		<result column="user_ip" property="userIP"/>
+		<result column="user_status" property="userStatus"/>
+		<association property="userRole" column="role_id" javaType="Role">
+			<id column="role_id" property="roleID"/>
+			<result column="role_name" property="roleName"/>
+			<result column="role_rights" property="roleRights"/>
+		</association>
+	</resultMap>
+	
+	<resultMap type="User" id="user">
+		<id column="user_id" property="userID"/>
+		<result column="user_name" property="userName"/>
+		<result column="user_mobile" property="userMobile"/>
+		<result column="user_password" property="userPassword"/>
+		<result column="user_real_name" property="userRealName"/>
+		<result column="user_last_login_time" property="userLastLoginTime"/>
+		<result column="user_ip" property="userIP"/>
+		<result column="user_status" property="userStatus"/>
+	</resultMap>
+
+	<!-- 字段 -->
+	<sql id="Field">
+		user_id,
+		user_real_name,
+		user_name,
+		user_mobile,
+		user_password,
+		user_email,
+		user_role_id,
+		user_ip,
+		user_status,
+		user_last_login_time,
+		create_time
+	</sql>
+
+	<!-- 判断用户名和密码 -->
+	<select id="getUserByEmailAndPwd" parameterType="pd" resultMap="user">
+		SELECT
+			<include refid="Field"></include>
+		FROM
+			aurora.sys_user
+		WHERE
+			user_email = #{userEmail}
+		AND 
+			user_password = #{userPassword}
+		AND
+			user_status != '4'
+	</select> 
+	
+	<!-- 通过userEmail获取数据 -->
+	<select id="findByUserEmail" parameterType="pd" resultMap="user" >
+		SELECT 
+			<include refid="Field"></include>
+		FROM 
+			aurora.sys_user
+		WHERE 
+			user_email = #{userEmail}
+	</select>
+	
+	<!-- 通过用户ID获取用户信息和角色信息 -->
+	<select id="getUserAndRoleById" parameterType="int" resultMap="userAndRoleResultMap">
+		SELECT
+			u.user_id,
+			u.user_name,
+			u.user_real_name,
+			u.user_email,
+			u.user_password,
+			r.role_id,
+			r.role_name,
+			r.role_rights
+		FROM
+			aurora.sys_user u
+		LEFT JOIN
+			aurora.sys_role r
+		ON
+			u.user_role_id = r.role_id
+		WHERE 
+			u.user_status != '4'
+		AND
+			u.user_id = #{userID}
+	</select>
+	
+	<!-- 获取用户总数 -->
+	<select id="getUserCount"  resultType="pd">
+		SELECT 
+			count(user_id) userCount
+		FROM 
+			aurora.sys_user
+	</select>
+	<!-- 默认用户总数 -->
+	<select id="getUserTotalRecord" parameterType="page" resultType="pd" >
+		SELECT 
+		COUNT(u.user_id) userCount
+		FROM
+			aurora.sys_user u
+		LEFT JOIN
+			aurora.sys_role r 
+		ON 
+			u.user_role_id = r.role_id
+		WHERE
+			u.user_name != 'admin'
+	</select>
+	
+	<!-- 默认用户列表(全部) -->
+	<select id="getUserList" parameterType="page" resultType="pd" >
+		SELECT
+			u.user_id,
+			u.user_name,
+			u.user_real_name,
+			u.user_password,
+			u.user_email,
+			u.user_mobile,
+			user_status,
+			u.user_last_login_time,
+			u.user_ip,
+			create_time,
+			r.role_id,
+			r.role_name
+		FROM
+			aurora.sys_user u
+		LEFT JOIN
+			aurora.sys_role r 
+		ON 
+			u.user_role_id = r.role_id
+		WHERE
+			u.user_name != 'admin'
+		ORDER BY 
+			u.user_id ASC
+		LIMIT 
+			#{fromIndex}, #{pageSize}
+	</select>
+	
+	<!-- 条件查询用户总数 -->
+	<select id="getUserTotalRecordByCondition" parameterType="page" resultType="pd" >
+		SELECT 
+		COUNT(u.user_id) userCount
+		FROM
+			aurora.sys_user u
+		LEFT JOIN
+			aurora.sys_role r 
+		ON 
+			u.user_role_id = r.role_id
+		WHERE
+			u.user_name != 'admin'
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			AND
+				(
+					 u.user_name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					 u.user_mobile LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+					 or
+					 u.user_real_name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+				)
+		</if>
+		<if test="pd.roleName != null and pd.roleName != ''"><!-- 角色检索 -->
+			AND r.role_name = #{pd.roleName} 
+		</if>
+		<if test="pd.userStatus != null and pd.userStatus != ''"><!-- 账号状态检索 -->
+			AND u.user_status = #{pd.userStatus} 
+		</if>
+	</select>
+	
+	<!-- 根据条件查询用户列表(全部) -->
+	<select id="getUserListByCondition" parameterType="page" resultType="pd" >
+		SELECT
+			u.user_id,
+			u.user_name,
+			u.user_real_name,
+			u.user_password,
+			u.user_email,
+			u.user_mobile,
+			user_status,
+			u.user_last_login_time,
+			u.user_ip,
+			create_time,
+			r.role_id,
+			r.role_name
+		FROM
+			aurora.sys_user u
+		LEFT JOIN
+			aurora.sys_role r 
+		ON 
+			u.user_role_id = r.role_id 
+		WHERE
+			u.user_name != 'admin'
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			AND
+				(
+					 u.user_name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					 u.user_mobile LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+					 or
+					 u.user_real_name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+				)
+		</if>
+		<if test="pd.roleName != null and pd.roleName != ''"><!-- 角色检索 -->
+			AND r.role_name = #{pd.roleName} 
+		</if>
+		<if test="pd.userStatus != null and pd.userStatus != ''"><!-- 账号状态检索 -->
+			AND u.user_status = #{pd.userStatus} 
+		</if>
+		ORDER BY 
+			u.user_id ASC
+		LIMIT 
+			#{fromIndex}, #{pageSize}
+	</select>
+	
+	<!-- 通过user_id获取用户数据 -->
+	<select id="getUserByUserID" parameterType="pd" resultType="pd" >
+		SELECT 
+			<include refid="Field"></include>
+		FROM 
+			aurora.sys_user
+		WHERE 
+			user_id = #{userID}
+	</select>
+	
+		<!-- 根据角色ID获取所属用户 -->
+	<select id="getUserListByRoldID" parameterType="pd" resultType="pd" >
+		SELECT
+			<include refid="Field"></include>
+		FROM
+			aurora.sys_user 
+		WHERE 
+			user_role_id = #{roleID} 
+	</select>
+		
+		<!-- @author SSY 根据角色ID获取所属用户 -->
+	<select id="getUserCountByEmail" parameterType="String" resultType="pd" >
+		SELECT
+			*
+		FROM
+			aurora.sys_user
+		WHERE 
+			user_email = #{userEmail} 
+	</select>
+	
+	<!-- 根据销售角色ID获取所属用户id -->
+	<select id="getUserIDBySalesRoleID" parameterType="String" resultType="pd" >
+		SELECT
+			DISTINCT(user_id),
+			user_mobile
+		FROM
+			aurora.sys_user 
+		WHERE 
+			user_role_id = #{salesRoleID}
+		AND
+			user_status != 4
+	</select>
+	
+	<!-- 根据销售角色ID获取所属用户id -->
+	<select id="getWatchUser" parameterType="String" resultMap="user" >
+		SELECT
+			user_id,
+			user_real_name,
+			user_name,
+			user_status,
+			user_ip,
+			user_last_login_time,
+			user_mobile
+		FROM
+			aurora.sys_user 
+		WHERE 
+			user_role_id = #{watchRoleID}
+		LIMIT
+			0,1
+	</select>
+	
+	
+	
+</mapper>

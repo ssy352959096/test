@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BrandWriteMapper">
+
+	<!-- 字段 -->
+	<sql id="Field">
+		brand_name,
+		brand_map,
+		advertise_map,
+		recommend_map,
+		national_flag,
+		country_ename,
+		country_cname,
+		brand_describe1,
+		brand_describe2,
+		brand_category_id,
+		create_operator,
+		create_time,
+		brand_icon
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{brandName},
+		#{brandMap},
+		#{advertiseMap},
+		#{recommendMap},
+		#{nationalFlag},
+		#{countryEName},
+		#{countryCName},
+		#{brandDescribe1},
+		#{brandDescribe2},
+		#{brandCategoryId},
+		#{operator},
+		#{time},
+		#{brandCId}
+	</sql>
+
+	<!-- 添加品牌 -->
+	<insert id="addBrand" parameterType="pd" >
+		INSERT INTO
+			aurorascm.brand
+		(
+			<include refid="Field"></include>
+		) VALUES (
+			<include refid="FieldValue"></include>
+		)
+	</insert>
+	 <!-- @author SSY 修改品牌 -->
+	 <update id="updateBrand"  parameterType="pd">
+		UPDATE 
+			aurorascm.brand
+		SET
+			brand_name= #{brandName},
+			brand_icon= #{brandCId},
+			brand_category_id= #{brandCategoryId},
+			brand_map = #{brandMap},
+			advertise_map = #{advertiseMap},
+			recommend_map = #{recommendMap},
+			national_flag = #{nationalFlag},
+			country_ename = #{countryEName},
+			country_cname = #{countryCName},
+			brand_describe1 = #{brandDescribe1},
+			update_time = #{time},
+			update_operator = #{operator},
+			brand_describe2 = #{brandDescribe2} 
+		WHERE
+			brand_id= #{brandId}
+	</update>
+	
+	
+</mapper>

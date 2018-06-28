@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BrandRulesSettingReadMapper">
+
+<resultMap type="com.aurora.entity.dcc.BrandRulesSetting" id="BrandRulesSettingResultMap">
+		<id column="brand_id" property="brandId"/>
+		<result column="brand_no" property="brandNo"/>
+		<result column="brand_cname" property="brandCname"/>
+		<result column="brand_ename" property="brandEname"/>
+		<result column="brand_state" property="brandState"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="update_name" property="updateName"/>
+	</resultMap>
+	<!-- 字段 -->
+	<sql id="BRSField">
+		brand_id,
+		brand_no,
+		brand_cname,
+		brand_ename,
+		brand_state,
+		update_time,
+		update_name
+	</sql>
+	<!-- 字段值 -->
+	<sql id="BRSFieldValue">
+		#{brandId},
+		#{brandNo},
+		#{brandCname},
+		#{brandEname},
+		#{brandState},
+		#{updateTime},
+		#{updateName}
+	</sql>
+	<!-- @author KJH  @date 2018年6月26日 上午9:19:30  查询品牌信息总数 -->
+	<select id="getBrandRulesSettingNum"  resultType="int">
+		SELECT
+		count(brand_id) as num
+		FROM  dcc.brand_info
+	</select>
+	
+	<!-- @author KJH  @date 2018年6月25日 下午5:20:51  查询品牌信息 -->
+	<select id="getBrandRulesSettingList" parameterType="page" resultMap="BrandRulesSettingResultMap">
+		SELECT
+		<include refid="BRSField"></include>
+		FROM  dcc.brand_info
+		LIMIT #{fromIndex},#{pageSize}
+	</select>
+    <!--@author KJH  @date 2018年6月25日 下午5:20:51 根据条件查询品牌信息 -->
+   <select id="searBrandRulesSettingList" resultMap="BrandRulesSettingResultMap">
+		SELECT
+		<include refid="BRSField"></include>
+		FROM dcc.brand_info
+		WHERE 
+		brand_no LIKE CONCAT ("%",#{brandCname},"%")
+	</select>
+</mapper>

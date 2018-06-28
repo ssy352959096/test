@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ContractReadMapper">
+	<resultMap type="com.aurora.entity.ContractManage" id="ContractManageResultMap">
+		<id column="contract_id" property="contractID"/>
+		<result column="source_id" property="sourceID"/>
+		<result column="inquiry_id" property="inquiryID"/>
+		<result column="sales_manager" property="salesManager"/>
+		<result column="contract_state" property="contractState"/>
+		<result column="contract_money" property="contractMoney"/>
+		<result column="total_postage" property="totalPostage"/>
+		<result column="trade_no" property="tradeNo"/>
+		<result column="pay_path" property="payPath"/>
+		<result column="pay_time" property="payTime"/>
+		<result column="pay_money" property="payMoney"/>
+		<result column="contract_file" property="contractFile"/>
+		<result column="upload_time" property="uploadTime"/>
+		<result column="upload_operator" property="uploadOperator"/>
+		<result column="create_time" property="createTime"/>
+		<result column="customer_id" property="customerID"/>
+		<result column="customer_name" property="customerName"/>
+		<result column="customer_email" property="customerEmail"/>
+		<result column="customer_mobile" property="customerMobile"/>
+		<result column="company" property="company"/>
+		<result column="address" property="address"/>
+		<collection property="contractGoodsList" column="contract_id" ofType="com.aurora.entity.ContractGoods">
+			<id column="contract_goods_id" property="contractGoodsID"/>
+			<result column="contract_id" property="contractID"/>
+			<result column="goods_name" property="goodsName"/>
+			<result column="goods_code" property="goodsCode"/>
+			<result column="goods_brand" property="goodsBrand"/>
+			<result column="goods_norm" property="goodsNorm"/>
+			<result column="goods_num" property="goodsNum"/>
+			<result column="goods_map" property="goodsMap"/>
+			<result column="deliver_country" property="deliverCountry"/>
+			<result column="deliver_city" property="deliverCity"/>
+			<result column="trade_type" property="tradeType"/>
+			<result column="ready_time" property="readyTime"/>
+			<result column="logistics_type" property="logisticsType"/>
+			<result column="volume" property="volume"/>
+			<result column="pallet_volume" property="palletVolume"/>
+			<result column="pallet_price" property="palletPrice"/>
+			<result column="postage" property="postage"/>
+			<result column="goods_price" property="goodsPrice"/>
+			<result column="supply_price" property="supplyPrice"/>
+			<result column="currency_sign" property="currencySign"/>
+			<result column="currency_name" property="currencyName"/>
+			<result column="valid_time" property="validTime"/>
+		</collection>
+	</resultMap>
+	<resultMap type="com.aurora.entity.ContractGoods" id="ContractGoodsResultMap">
+		<id column="contract_goods_id" property="contractGoodsID"/>
+		<result column="contract_id" property="contractID"/>
+		<result column="goods_name" property="goodsName"/>
+		<result column="goods_code" property="goodsCode"/>
+		<result column="goods_brand" property="goodsBrand"/>
+		<result column="goods_norm" property="goodsNorm"/>
+		<result column="goods_num" property="goodsNum"/>
+		<result column="goods_map" property="goodsMap"/>
+		<result column="deliver_country" property="deliverCountry"/>
+		<result column="deliver_city" property="deliverCity"/>
+		<result column="trade_type" property="tradeType"/>
+		<result column="ready_time" property="readyTime"/>
+		<result column="logistics_type" property="logisticsType"/>
+		<result column="volume" property="volume"/>
+		<result column="pallet_volume" property="palletVolume"/>
+		<result column="pallet_price" property="palletPrice"/>
+		<result column="postage" property="postage"/>
+		<result column="goods_price" property="goodsPrice"/>
+		<result column="supply_price" property="supplyPrice"/>
+		<result column="currency_sign" property="currencySign"/>
+		<result column="currency_name" property="currencyName"/>
+		<result column="valid_time" property="validTime"/>
+	</resultMap>
+
+	<!-- @author SSY 2018-1-9  查询符合条件的有效合同列表; -->
+	<select id="getContractList" parameterType="page" resultMap="ContractManageResultMap">
+		SELECT
+			*
+		FROM
+			aurorascm.contract_manage m
+		INNER JOIN
+			aurorascm.contract_goods g
+		ON 
+			g.contract_id = m.contract_id
+		WHERE 1=1
+		<if test="pd.salesManager!=null">
+			AND m.sales_manager = #{pd.salesManager}
+		</if>
+		<if test="pd.contractState != null and pd.contractState == 3">
+			AND m.contract_state IN (3,4)
+		</if>
+		<if test="pd.contractState != null and pd.contractState != 3">
+			AND m.contract_state = #{pd.contractState}
+		</if>
+		<if test="pd.contractState == null">
+			AND m.contract_state != 5
+		</if>
+		<if test="pd.contractID != null">
+			AND m.contract_id = #{pd.contractID}
+		</if>
+		<if test="pd.beginTime != null">
+			AND m.create_time &gt;= #{pd.beginTime}
+		</if>
+		<if test="pd.endTime != null">
+			AND m.create_time &lt;= #{pd.endTime}
+		</if>
+		ORDER BY
+			m.create_time DESC
+		LIMIT 
+			#{fromIndex}, #{pageSize}
+	</select>
+	
+	<!-- @author SSY 2018-1-9  查询符合条件的有效合同数量; -->
+	<select id="getContractNum" parameterType="page" resultType="int">
+		SELECT
+			count(DISTINCT contract_id) as num
+		FROM
+			aurorascm.contract_manage 
+		WHERE 1=1
+			 
+		<if test="pd.salesManager!=null">
+			AND sales_manager = #{pd.salesManager}
+		</if>
+		<if test="pd.contractState != null and pd.contractState == 3">
+			AND  contract_state IN (3,4)
+		</if>
+		<if test="pd.contractState != null and pd.contractState != 3">
+			AND  contract_state = #{pd.contractState}
+		</if>
+		<if test="pd.contractState == null">
+			AND  contract_state != 5
+		</if>
+		<if test="pd.contractID != null">
+			AND contract_id = #{pd.contractID}
+		</if>
+		<if test="pd.beginTime != null">
+			AND create_time &gt;= #{pd.beginTime}
+		</if>
+		<if test="pd.endTime != null">
+			AND create_time &lt;= #{pd.endTime}
+		</if>
+	</select>
+	
+	<!-- @author SSY 2018-1-9  查询符合合同状态的有效合同数量; -->
+	<select id="getContractStateNum" parameterType="pd" resultType="int">
+		SELECT
+			count(DISTINCT contract_id) as num
+		FROM
+			aurorascm.contract_manage 
+		WHERE
+			contract_state = #{contractState}
+		<if test="salesManager!=null">
+			AND sales_manager = #{salesManager}
+		</if>
+	</select>
+
+	<!-- @author SSY 2018-1-9获取当天合同采购单新增数量 -->
+	<select id="getContractDayNum" parameterType="String" resultType="int">
+		SELECT
+			count(DISTINCT contract_id) num
+		FROM
+			aurorascm.contract_manage
+		WHERE
+			create_time LIKE CONCAT(#{date},'%')
+		<if test="salesManager!=null">
+			AND sales_manager = #{salesManager}
+		</if>
+	</select>
+
+
+	<!-- @author SSY 2018-1-9  查询合同文件url; -->
+	<select id="getLastContractFileUrl" parameterType="pd" resultType="String">
+		SELECT
+			contract_file
+		FROM
+			aurorascm.contract_manage
+		WHERE
+			contract_id = #{contractID}
+		<if test="salesManager!=null">
+			AND sales_manager = #{salesManager}
+		</if>
+	</select>
+
+ <!-- @author SSY 2018-1-9  查询合同; -->
+	<select id="getContract" parameterType="pd" resultMap="ContractManageResultMap">
+		SELECT
+			*
+		FROM
+			aurorascm.contract_manage m
+		INNER JOIN
+			aurorascm.contract_goods g
+		ON 
+			m.contract_id = g.contract_id
+		WHERE
+			m.contract_id = #{contractID}
+		<if test="salesManager!=null">
+			AND m.sales_manager = #{salesManager}
+		</if>
+	</select>
+
+	<!-- @author SSY 2018-1-10 查询销售人员; -->
+	<select id="getContractSalesManage" parameterType="pd" resultType="int">
+		SELECT
+			sales_manager
+		FROM
+			aurorascm.contract_manage 
+		WHERE
+			contract_id = #{contractID}
+	</select>
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	<!-- ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ -->
+	<!-- **************************************我是分割线******************************************* -->
+	<!-- ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ -->
+		
+		
+		
+
+
+
+
+
+
+ 
+	 
+<!-- @author SSY 条件查询合同单id -->
+	<select id="getContractIds" parameterType="page"
+		resultType="pd">
+		SELECT
+			contract_id
+		FROM
+			aurorascm.contract_manage
+		WHERE
+			1=1
+		<if test=" pd.beginTime != null">
+			AND create_time &gt;= #{pd.beginTime}
+		</if>
+		<if test=" pd.endTime != null">
+			AND create_time &lt;= #{pd.endTime}
+		</if>
+		<if test=" pd.contractState != null">
+			AND contract_state = #{pd.contractState}
+		</if>
+		ORDER BY
+			create_time DESC
+		LIMIT
+			#{fromIndex}, #{pageSize}
+	</select>	 
+	 
+<!-- @author SSY  条件查询合同单总条数 -->
+	<select id="getContractsNum" parameterType="page"
+		resultType="int">
+		SELECT
+			count(contract_id) num
+		FROM
+			aurorascm.contract_manage
+		WHERE
+			1=1
+		<if test=" pd.beginTime != null">
+			AND create_time &gt;= #{pd.beginTime}
+		</if>
+		<if test=" pd.endTime != null">
+			AND create_time &lt;= #{pd.endTime}
+		</if>
+		<if test=" pd.contractState != null">
+			AND contract_state = #{pd.contractState}
+		</if>
+	 
+	</select>	 	 
+	 
+<!-- @author SSY  根据采购单id 查询所有的商品 -->
+	<select id="getGoodsByContractID" parameterType="String" resultType="pd">
+		SELECT
+			*
+		FROM
+			aurorascm.contract_manage m
+		INNER JOIN
+			aurorascm.contract_goods g
+		ON 
+			g.contract_id = m.contract_id
+		WHERE
+			g.contract_id = #{contractID}
+	</select>
+	 
+ <!-- @author SSY  根据合同id和单商品id查询单商品合同报价信息 -->
+	<select id="getContractGoodsBy2ID" parameterType="pd" resultType="pd">
+		SELECT
+			*
+		FROM
+			aurorascm.contract_manage m
+		INNER JOIN
+			aurorascm.contract_goods g
+		ON 
+			g.contract_id = m.contract_id
+		WHERE
+			g.contract_id = #{contractID}
+		AND
+			g.goods_id = #{contractGID}
+	</select> 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+</mapper>

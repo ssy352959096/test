@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CustomerPoolWriteMapper">
+
+	<!-- 更新客户专属销售代表 -->
+	<update id="updateCustomerSalesman" parameterType="pd">
+		UPDATE
+			aurorascm.sys_customer
+		SET
+			sales_manager = #{salesmanID},
+			update_salesman_date = #{time}
+		WHERE
+			customer_id IN
+		<foreach collection="arrayCustomerID" index="index" item="item"  open="(" separator="," close=")">
+			 #{item}
+			</foreach>
+	</update>
+	
+	   
+	 
+</mapper>

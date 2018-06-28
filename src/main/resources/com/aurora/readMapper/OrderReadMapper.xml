@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="OrderReadMapper">
+		
+	<!-- 根据订单号获取订单包含商品 -->
+	<select id="getOrderGoodsByOID"  parameterType="String" resultType="pd">
+		SELECT 
+			*
+		FROM
+			aurorascm.order_goods g
+		INNER JOIN
+			aurorascm.order_manage m
+		ON 
+			g.order_id = m.order_id
+		WHERE
+			m.order_id = #{orderID}
+	</select>
+	
+	<!-- 网站管理/订单管理  根据商品goodsName等条件获取订单ID -->
+	<select id="getOrderIDByS5"  parameterType="page" resultType="pd">
+		SELECT 
+			DISTINCT  m.order_id,
+			m.order_time
+		FROM
+			aurorascm.order_goods g
+		INNER JOIN
+			aurorascm.order_manage m
+		ON 
+			g.order_id = m.order_id
+		WHERE 1 = 1
+			<if test=" pd.goodsName != null">
+				AND		g.goods_name LIKE CONCAT('%', #{pd.goodsName},'%')
+			</if>
+			<if test=" pd.customerID != null">
+				AND		m.customer_id = #{pd.customerID} 
+			</if>
+			<if test=" pd.orderState != null and pd.orderState != 9 ">
+				AND		m.order_state != '9'
+			</if>
+			<if test=" pd.orderState != null and pd.orderState == 9 ">
+				AND		m.order_state = '9'
+			</if>
+			<if test=" pd.beginTime != null">
+				AND		m.order_time &gt;= #{pd.beginTime}
+			</if>
+			<if test=" pd.endTime != null">
+				AND		m.order_time &lt;=  #{pd.endTime}
+			</if>
+		ORDER BY
+			m.order_time ${pd.orderAD}
+		LIMIT 
+			#{fromIndex}, #{pageSize}
+	</select>
+	
+	<!-- 网站管理/订单管理  根据商品ID等条件获取订单数量 -->
+	<select id="getOrderIDNumByS5"  parameterType="page" resultType="int">
+		SELECT 
+			count(DISTINCT  m.order_id) num
+		FROM
+			aurorascm.order_goods g
+		INNER JOIN
+			aurorascm.order_manage m
+		ON 
+			g.order_id = m.order_id
+		WHERE 1 = 1
+			<if test=" pd.goodsName != null">
+				AND		g.goods_name  LIKE CONCAT('%', #{pd.goodsName},'%')
+			</if>
+			<if test=" pd.orderState != null and pd.orderState != 9 ">
+				AND		m.order_state != '9'
+			</if>
+			<if test=" pd.orderState != null and pd.orderState == 9 ">
+				AND		m.order_state = '9'
+			</if>
+			<if test=" pd.beginTime != null">
+				AND		m.order_time &gt;= #{pd.beginTime}
+			</if>
+			<if test=" pd.endTime != null">
+				AND		m.order_time &lt;=  #{pd.endTime}
+			</if>
+	</select>
+	
+	<!-- 订单管理/所有订单   根据商品goodsName等条件获取订单ID -->
+	<select id="getOrderIDByS8"  parameterType="page" resultType="pd">
+		SELECT 
+			DISTINCT  m.order_id,
+			m.order_time
+		FROM
+			aurorascm.order_goods g
+		INNER JOIN
+			aurorascm.order_manage m
+		ON 
+			g.order_id = m.order_id
+		INNER JOIN
+			aurorascm.sys_customer c
+		ON 
+			c.customer_id = m.customer_id
+		WHERE 1 = 1
+			<if test=" pd.goodsName != null">
+				AND		g.goods_name LIKE CONCAT ('%',#{pd.goodsName},'%')
+			</if>
+			<if test=" pd.customerID != null">
+				AND		m.customer_id = #{pd.customerID} 
+			</if>
+			<if test=" pd.customerEmail != null">
+				AND		c.customer_email = #{pd.customerEmail} 
+			</if>
+			<if test=" pd.customerMobile != null">
+				AND		c.customer_mobile = #{pd.customerMobile} 
+			</if>
+			<if test=" pd.payType != null and pd.payType != 1 ">
+				AND		m.pay_type != '1'
+			</if>
+			<if test=" pd.payType != null and pd.payType == 1 ">
+				AND		m.pay_type = '1'
+			</if>
+			<if test=" pd.orderType != null">
+				AND		m.order_type = #{pd.orderType}
+			</if>
+			<if test=" pd.tradeType != null">
+				AND		g.trade_type = #{pd.tradeType}
+			</if>
+			<if test=" pd.orderStateList != null">
+				AND		m.order_state IN 
+							<foreach collection="pd.orderStateList" item="item" index="index" open="(" close=")" separator=",">
+           					 #{item}
+       						</foreach>
+			</if>
+			<if test=" pd.beginTime != null">
+				AND		m.order_time &gt;= #{pd.beginTime}
+			</if>
+			<if test=" pd.endTime != null">
+				AND		m.order_time &lt;=  #{pd.endTime}
+			</if>
+		ORDER BY
+			m.order_time DESC
+		<if test="pd.export!='true'.toString">
+		LIMIT 
+			#{fromIndex}, #{pageSize}
+		</if>
+	
+	</select>
+	
+	<!-- 订单管理/所有订单   根据商品ID等条件获取订单数量 -->
+	<select id="getOrderIDNumByS8"  parameterType="page" resultType="int">
+		SELECT 
+			count(DISTINCT m.order_id) num
+		FROM
+			aurorascm.order_goods g
+		INNER JOIN
+			aurorascm.order_manage m
+		ON 
+			g.order_id = m.order_id
+		INNER JOIN
+			aurorascm.sys_customer c
+		ON 
+			c.customer_id = m.customer_id
+		WHERE 1 = 1
+			<if test=" pd.goodsName != null">
+				AND		g.goods_name LIKE CONCAT ('%',#{pd.goodsName},'%')
+			</if>
+			<if test=" pd.customerID != null">
+				AND		m.customer_id = #{pd.customerID} 
+			</if>
+			<if test=" pd.customerEmail != null">
+				AND		c.customer_email = #{pd.customerEmail} 
+			</if>
+			<if test=" pd.customerMobile != null">
+				AND		c.customer_mobile = #{pd.customerMobile} 
+			</if>
+			<if test=" pd.payType != null and pd.payType != 1 ">
+				AND		m.pay_type != '1'
+			</if>
+			<if test=" pd.payType != null and pd.payType == 1 ">
+				AND		m.pay_type = '1'
+			</if>
+			<if test=" pd.orderType != null">
+				AND		m.order_type = #{pd.orderType}
+			</if>
+			<if test=" pd.tradeType != null">
+				AND		g.trade_type = #{pd.tradeType}
+			</if>
+			<if test=" pd.orderState != null">
+				AND		m.order_state = #{pd.orderState}
+			</if>
+			<if test=" pd.beginTime != null">
+				AND		m.order_time &gt;= #{pd.beginTime}
+			</if>
+			<if test=" pd.endTime != null">
+				AND		m.order_time &lt;=  #{pd.endTime}
+			</if>
+	</select>
+	
+	<!-- 根据订单ID获取订单老状态 -->
+	<select id="getOrderOldState"  parameterType="String" resultType="String">
+		SELECT 
+			order_old_state
+		FROM
+			aurorascm.order_manage
+		WHERE 
+			order_id = #{orderID}
+	</select>
+	
+	<!-- @author SSY 根据订单ID获取订单状态 -->
+	<select id="getOrderState"  parameterType="String" resultType="String">
+		SELECT 
+			order_state
+		FROM
+			aurorascm.order_manage
+		WHERE 
+			order_id = #{orderID}
+	</select>
+	
+	<!--  根据订单编号查询订单类型;*(微仓Or非微仓) -->
+	<select id="getOrderLevel"  parameterType="String" resultType="int">
+		SELECT 
+			order_level
+		FROM
+			aurorascm.order_manage
+		WHERE 
+			order_id = #{orderID}
+	</select>	
+
+	<!-- 获取今天下单数量 -->
+	<select id="getTodayONum"  parameterType="String" resultType="int">
+		SELECT 
+			count(order_id) num
+		FROM
+			aurorascm.order_manage
+		WHERE 
+			order_time LIKE CONCAT(#{time}, '%')
+		AND
+			order_state NOT IN (3,4, 5, 9,10)
+	</select>
+		
+	<!-- 根据订单状态获取订单数量 -->
+	<select id="getONumByState"  parameterType="String" resultType="int">
+		SELECT 
+			count(order_id) num
+		FROM
+			aurorascm.order_manage
+		WHERE 
+			order_state = #{state}
+	</select>
+		
+	<!-- 获取今天营业额 -->
+	<select id="getTodayTurnover"  parameterType="String" resultType="String">
+		SELECT 
+			IFNULL(SUM(pay_money),0.00) as pay_money 
+		FROM
+			aurorascm.order_manage
+		WHERE 
+			order_time LIKE CONCAT(#{time}, '%')
+		AND
+			order_state IN (2, 6, 7, 8 )
+	</select>
+	
+	
+	<!-- 查询所有物流公司 -->
+	<select id="getLogisticsCompany"  resultType="pd">
+		SELECT 
+			*
+		FROM
+			aurorascm.express_code
+	</select>
+	
+	<!-- 根据订单ID获取订单类型-->
+	<select id="getOrderType"  parameterType="String" resultType="int">
+		SELECT 
+			order_type
+		FROM
+			aurorascm.order_manage
+		WHERE 
+			order_id = #{orderID}
+	</select>
+	
+	
+		<!-- 根据订单ID获取订单类型-->
+	<select id="getPayType"  parameterType="String" resultType="int">
+		SELECT 
+			pay_type
+		FROM
+			aurorascm.order_manage
+		WHERE 
+			order_id = #{orderID}
+	</select>
+	
+	<!-- 微仓订单同步到客户微仓；根据订单ID获取订单拥有的商品-->
+	<select id="getOrderGMByOID"  parameterType="String" resultType="pd">
+		SELECT 
+			m.order_id,
+			m.customer_id,
+			m.pay_type,
+			g.goods_id,
+			g.goods_name,
+			g.goods_code,
+			g.goods_num,
+			g.cost_price,
+			g.goods_price,
+			g.goods_map,
+			g.goods_weight,
+			g.deposit,
+			g.trade_type,
+			g.postage_style
+		FROM
+			aurorascm.order_goods g
+		INNER JOIN
+			aurorascm.order_manage m
+		ON 
+			g.order_id = m.order_id
+		WHERE 
+			m.order_id = #{orderID}
+	</select>
+	
+	<!-- 根据订单编号查询订单商品购买数量 -->
+		<select id="getOGStock"  parameterType="String" resultType="pd">
+		SELECT 
+			goods_id,
+			goods_num
+		FROM
+			aurorascm.order_goods
+		WHERE 
+			order_id = #{orderID}
+	</select>
+	
+	 	<!-- 确认收货,根据订单号查询所有需要发货的商品物流信息 -->
+	<select id="getLogisticInfo"  parameterType="String" resultType="pd">
+		SELECT 
+			g.goods_id,
+			g.logistics_company,
+			g.logistics_company_code,
+			g.logistics_number,
+			m.order_state
+		FROM
+			aurorascm.order_goods g
+		INNER JOIN
+			aurorascm.order_manage m
+		ON 
+			g.order_id = m.order_id
+		WHERE
+			m.order_id = #{orderID}
+		AND 
+			g.logistics_type = 1
+		LIMIT 1
+	</select>
+	
+	<!-- 10分钟未接单提醒 -->
+	<select id="get30MMissedOrderNum"  parameterType="String" resultType="int">
+		SELECT 
+			count(order_id) num
+		FROM
+			aurorascm.order_manage
+		WHERE 
+			sales_manager = #{userID}
+		AND
+			order_state = '2'
+		AND
+			pay_time != ''
+		AND
+			TIMESTAMPDIFF(MINUTE, pay_time, NOW()) > 30
+	</select>
+	
+	
+	
+</mapper>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BrandSmallClassSettingReadMapper">
+
+	<resultMap type="com.aurora.entity.dcc.BrandSmallClassSetting"
+		id="BrandSmallClassSetting">
+		<id column="small_class_id" property="smallClassId" />
+		<result column="small_class_state" property="smallClassState" />
+		<result column="brand_id" property="brandId" />
+		<result column="small_class_no" property="smallClassNo" />
+		<result column="small_class_name" property="smallClassName" />
+		<result column="commodity_name" property="commodityName" />
+		<result column="update_time" property="updateTime" />
+		<result column="update_name" property="updateName" />
+	</resultMap>
+
+	<!-- 字段 -->
+	<sql id="BSCSfield">
+		small_class_id,
+		small_class_state,
+		brand_id,
+		small_class_no,
+		small_class_name,
+		commodity_name,
+		update_time,
+		update_name
+	</sql>
+	<!-- 字段值 -->
+	<sql id="BSCSfieldValue">
+		#{smallClassId},
+		#{smallClassState},
+		#{brandId},
+		#{smallClassNo},
+		#{smallClassName},
+		#{commodityName},
+		#{updateTime},
+		#{updateName}
+	</sql>
+
+	<!--@author KJH @date 2018年6月25日 下午5:20:51 查询商品小类信息 -->
+	<select id="getBrandSmallClassSettingNum" resultType="int">
+		SELECT
+		count(small_class_id) as num
+		FROM dcc.small_class_info
+	</select>
+	<!--@author KJH @date 2018年6月25日 下午5:20:51 查询商品小类信息 -->
+	<select id="getBrandSmallClassSettingList" parameterType="page"
+		resultMap="BrandSmallClassSetting">
+		SELECT
+		<include refid="BSCSfield"></include>
+		FROM dcc.small_class_info
+		LIMIT #{fromIndex},#{pageSize}
+	</select>
+	<!--@author KJH @date 2018年6月25日 下午5:20:51 根据查询商品小类信息 -->
+	<select id="searBrandSmallClassSettingList" parameterType="com.aurora.entity.dcc.BrandSmallClassSetting"
+		resultMap="BrandSmallClassSetting">
+		SELECT
+		<include refid="BSCSfield"></include>
+		FROM dcc.small_class_info s
+		INNER JOIN
+		brand_info b
+		ON
+		s.brand_id=b.brand_id 
+		WHERE
+		<if test=" commodityName != null">
+			s.small_class_no LIKE CONCAT ("%",#{smallClassName},"%")
+		</if>
+	</select>
+</mapper>

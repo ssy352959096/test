@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="StatisticsCategoryReadMapper">
+
+ <!--@author SSY 查询订单中各一级类目订单量比例,(不含微仓订单)按照时间筛选 ; -->
+	<select id="getCategory1OrderChart" parameterType="pd" resultType="pd">
+	SELECT
+			gc.category_name,gc.category_id,IFNULL(order_num,0) as order_num
+	FROM
+		aurorascm.goods_category gc
+	LEFT JOIN 
+	(	
+		SELECT 
+			c.category1,c.category1_id, count(c.category1_id)  order_num
+		FROM 
+			aurorascm.order_goods g
+		INNER JOIN
+			aurorascm.order_manage m
+		ON 
+			g.order_id = m.order_id
+		INNER JOIN
+			aurorascm.goods_common c
+		ON 
+			g.goods_id = c.goods_id
+		WHERE 
+			m.order_level = 1
+		AND
+			m.order_state NOT IN (1,3,9,10)<!-- 客户付完款又选择退款(4,5)依然算进销售统计中,但实际利润不这样统计-->
+		AND
+			m.pay_time &gt;= #{payTime}
+		GROUP BY c.category1_id,c.category1
+	) as sss
+	ON 
+		sss.category1_id = gc.category_id
+	WHERE 
+		gc.category_level = 1
+	</select>
+	
+<!--  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ -->
+	
+<!--@author SSY 查询订单中各二级类目累计订单量比例 ;(不含微仓订单)按照时间,一级类目筛选 -->
+	<select id="getCategory2OrderChart" parameterType="pd" resultType="pd">
+	SELECT
+		gc.category_name,gc.category_id,IFNULL(order_num,0) as order_num
+	FROM
+		aurorascm.goods_category gc
+	LEFT JOIN 
+	(
+		SELECT 
+			c.category2,c.category2_id, count(c.category2_id) order_num
+		FROM 
+			aurorascm.order_goods g
+		INNER JOIN
+			aurorascm.order_manage m
+		ON 
+			g.order_id = m.order_id
+		INNER JOIN
+			aurorascm.goods_common c
+		ON 
+			g.goods_id = c.goods_id
+		WHERE 
+			m.order_level = 1
+		AND 
+			c.category1_id = #{category1ID}
+		AND
+			m.order_state NOT IN (1,3,9,10)<!-- 客户付完款又选择退款(4,5)依然算进销售统计中,但实际利润不这样统计-->
+		AND
+			m.pay_time &gt;= #{payTime}
+		GROUP BY c.category2_id,c.category2
+	) as sss
+	ON 
+		sss.category2_id = gc.category_id
+	WHERE
+		gc.category_level = 2
+	AND 
+		gc.category_parent_id = #{category1ID}
+	</select>
+	
+<!--  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ -->
+ 
+	
+	<!--@author SSY 查询订单中各一级类目累计销售件数比例 ;(不含微仓订单)按照时间筛选 -->
+	<select id="getCategory1SaleChart" parameterType="pd" resultType="pd">
+	SELECT
+			gc.category_name,gc.category_id,IFNULL(sale_num,0) as sale_num
+	FROM
+		aurorascm.goods_category gc
+	LEFT JOIN 
+	(
+		SELECT 
+			c.category1,c.category1_id, sum(g.goods_num) sale_num
+		FROM 
+			aurorascm.order_goods g
+		INNER JOIN
+			aurorascm.order_manage m
+		ON 
+			g.order_id = m.order_id
+		INNER JOIN
+			aurorascm.goods_common c
+		ON 
+			g.goods_id = c.goods_id
+		WHERE 
+			m.order_level = 1
+		AND
+			m.order_state NOT IN (1,3,9,10)<!-- 客户付完款又选择退款(4,5)依然算进销售统计中,但实际利润不这样统计-->
+		AND
+			m.pay_time &gt;= #{payTime}
+		GROUP BY c.category1_id,c.category1
+	)as sss
+	ON 
+		sss.category1_id = gc.category_id
+	WHERE gc.category_level = 1
+	</select>
+	
+	<!--  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ -->
+	
+	<!--@author SSY 查询订单中各二级类目累计销售件数比例 ;(不含微仓订单)按照时间,一级类目筛选 -->
+	<select id="getCategory2SaleChart" parameterType="pd" resultType="pd">
+	SELECT
+			gc.category_name,gc.category_id,IFNULL(sale_num,0) as sale_num
+	FROM
+		aurorascm.goods_category gc
+	LEFT JOIN 
+	(
+		SELECT 
+			c.category2,c.category2_id, sum(g.goods_num) sale_num
+		FROM 
+			aurorascm.order_goods g
+		INNER JOIN
+			aurorascm.order_manage m
+		ON 
+			g.order_id = m.order_id
+		INNER JOIN
+			aurorascm.goods_common c
+		ON 
+			g.goods_id = c.goods_id
+		WHERE 
+			m.order_level = 1
+		AND
+			m.order_state NOT IN (1,3,9,10)<!-- 客户付完款又选择退款(4,5)依然算进销售统计中,但实际利润不这样统计-->
+		AND
+			m.pay_time &gt;= #{payTime}
+		AND
+			c.category1_id = #{category1ID}
+		GROUP BY c.category2_id,c.category2
+	) as sss
+	ON 
+		sss.category2_id = gc.category_id
+	WHERE
+		gc.category_level = 2
+	AND 
+		gc.category_parent_id =#{category1ID}
+	</select>	 
+	
+ <!--  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ -->
+	
+	<!--@author SSY 查询价格段销量比,(不含微仓订单)按照时间,类目筛选-->
+	<select id="getPriceSaleChart" parameterType="pd" resultType="pd">
+	SELECT 
+  		'0-500' as price,IFNULL(count(g.goods_id),0) sale_num
+	FROM 
+		aurorascm.order_goods g
+	INNER JOIN
+		aurorascm.order_manage m
+	ON 
+		g.order_id = m.order_id
+	INNER JOIN
+		aurorascm.goods_common c
+	ON 
+		g.goods_id = c.goods_id
+	WHERE 
+		m.order_level = 1
+	AND
+		m.order_state NOT IN (1,3,9,10)<!-- 客户付完款又选择退款(4,5)依然算进销售统计中,但实际利润不这样统计-->
+	AND
+		m.pay_time &gt;= #{payTime}
+	AND 
+		g.goods_price BETWEEN 0 and 500
+	<if test="category1ID!=null">
+		AND c.category1_id = #{category1ID}
+	</if>
+	UNION ALL
+	SELECT 
+		'500-1000' as price,IFNULL(count(g.goods_id),0) sale_num
+	FROM 
+		aurorascm.order_goods g
+	INNER JOIN
+		aurorascm.order_manage m
+	ON 
+		g.order_id = m.order_id
+	INNER JOIN
+		aurorascm.goods_common c
+	ON 
+		g.goods_id = c.goods_id
+	WHERE 
+		m.order_level = 1
+	AND
+		m.order_state NOT IN (1,3,9,10)<!-- 客户付完款又选择退款(4,5)依然算进销售统计中,但实际利润不这样统计-->
+	AND
+		m.pay_time &gt;= #{payTime}
+	AND 
+		g.goods_price BETWEEN 500.01 and 1000
+	<if test="category1ID!=null">
+		AND c.category1_id = #{category1ID}
+	</if>
+	UNION ALL
+	SELECT 
+ 		'1000-1500' as price,IFNULL(count(g.goods_id),0) sale_num
+	FROM 
+		aurorascm.order_goods g
+	INNER JOIN
+		aurorascm.order_manage m
+	ON 
+		g.order_id = m.order_id
+	INNER JOIN
+		aurorascm.goods_common c
+	ON 
+		g.goods_id = c.goods_id
+	WHERE 
+		m.order_level = 1
+	AND
+		m.pay_time &gt;= #{payTime}
+	AND
+		m.order_state NOT IN (1,3,9,10)<!-- 客户付完款又选择退款(4,5)依然算进销售统计中,但实际利润不这样统计-->
+	AND 
+		g.goods_price BETWEEN 1000.01 and 1500
+	<if test="category1ID!=null">
+		AND c.category1_id = #{category1ID}
+	</if>
+	UNION ALL
+	SELECT 
+		'1500-2000' as price,IFNULL(count(g.goods_id),0) sale_num
+	FROM 
+		aurorascm.order_goods g
+	INNER JOIN
+		aurorascm.order_manage m
+	ON 
+		g.order_id = m.order_id
+	INNER JOIN
+		aurorascm.goods_common c
+	ON 
+		g.goods_id = c.goods_id
+	WHERE 
+		m.order_level = 1
+	AND
+		m.pay_time &gt;= #{payTime}
+	AND
+		m.order_state NOT IN (1,3,9,10)
+	AND 
+		g.goods_price BETWEEN 1500.01 and 2000
+	<if test="category1ID!=null">
+		AND c.category1_id = #{category1ID}
+	</if>
+	UNION ALL
+	SELECT 
+		'2000+' as price,IFNULL(count(g.goods_id),0)sale_num
+	FROM 
+		aurorascm.order_goods g
+	INNER JOIN
+		aurorascm.order_manage m
+	ON 
+		g.order_id = m.order_id
+	INNER JOIN
+		aurorascm.goods_common c
+	ON 
+		g.goods_id = c.goods_id
+	WHERE 
+		m.order_level = 1
+	AND
+		m.pay_time &gt;= #{payTime}
+	AND
+		m.order_state NOT IN (1,3,9,10)<!-- 客户付完款又选择退款(4,5)依然算进销售统计中,但实际利润不这样统计-->
+	AND 
+		g.goods_price>2000
+	<if test="category1ID!=null">
+		AND c.category1_id = #{category1ID}
+	</if>
+	</select>	 
+	
+	<!--  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ -->
+	
+	<!-- @author SSY 关键字统计显示 -->
+	<select id="getKeyWordStatisticsData" parameterType="pd" resultType="pd">
+	SELECT 
+		search_keyword,${monthNum} as num
+	FROM
+		aurorascm.s_search_keyword
+	ORDER BY ${monthNum} DESC
+	LIMIT 0,20
+	</select>
+	
+	
+	<!-- @author SSY 各类目销售额 (不含微仓订单)-->
+	<select id="getCategory1Saleroom" parameterType="pd" resultType="pd">
+	SELECT
+		gc.category_name,gc.category_id,IFNULL(saleroom,0) as saleroom
+	FROM
+		aurorascm.goods_category gc
+	LEFT JOIN 
+	(	
+		SELECT 
+			 c.category1_id, sum(g.goods_num*g.goods_price) saleroom
+		FROM 
+			aurorascm.order_goods g
+		INNER JOIN
+			aurorascm.order_manage m
+		ON 
+			g.order_id = m.order_id
+		INNER JOIN
+			aurorascm.goods_common c
+		ON 
+			g.goods_id = c.goods_id
+		WHERE 
+			m.order_level = 1
+		AND
+			m.order_state NOT IN (1,3,9,10)<!-- 客户付完款又选择退款(4,5)依然算进销售统计中,但实际利润不这样统计-->
+		GROUP BY c.category1_id 
+	) as sss
+	ON 
+		sss.category1_id = gc.category_id
+	WHERE 
+		gc.category_level = 1
+	ORDER BY gc.category_id
+	</select> 
+	
+	
+</mapper>

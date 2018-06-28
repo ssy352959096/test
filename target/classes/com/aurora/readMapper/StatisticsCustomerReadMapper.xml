@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="StatisticsCustomerReadMapper">
+
+	<!--@author SSY 条件展示商城客户列表; -->
+	<select id="getCustomerList" parameterType="page" resultType="pd">
+		SELECT 
+			c.customer_id,IF(c.customer_name!='',c.customer_name,c.customer_email) as customer_name,c.customer_mobile,IFNULL(scc.category1_num+scc.category2_num+scc.category3_num+scc.category4_num+
+				scc.category6_num+scc.category5_num+scc.category7_num,0) as total_click_num,
+				(	
+					SELECT
+						IFNULL(SUM(m.pay_money),0.00)
+					FROM
+						aurorascm.order_manage m
+					WHERE 
+						c.customer_id = m.customer_id
+					AND 
+						m.order_state NOT IN (1,3,9,10)
+				) as total_buy_money,
+				IFNULL((
+					SELECT
+						COUNT(DISTINCT m.order_id)
+					FROM
+						aurorascm.order_manage m
+					WHERE 
+						c.customer_id = m.customer_id
+					AND 
+						m.order_state NOT IN(1,3,9,10)
+				)
+				/
+				(scc.category1_num+scc.category2_num+scc.category3_num+scc.category4_num+
+					scc.category6_num+scc.category5_num+scc.category7_num),0) as conversion_percent
+	FROM 
+		aurorascm.sys_customer c
+	LEFT JOIN
+		aurorascm.s_customer_click scc
+	ON	
+		c.customer_id = scc.customer_id
+	WHERE 1=1
+		<if test="pd.phone!=null">
+		AND c.customer_mobile = #{pd.phone}
+		</if>
+		<if test="pd.name!=null">
+		AND (c.customer_name = #{pd.name}
+			OR c.customer_email = #{pd.name})
+		</if>
+		<if test="pd.orderBY!=null and pd.orderBY=='1'.toString()">
+		ORDER BY  total_click_num ${pd.orderAD}
+		</if>
+		<if test="pd.orderBY!=null and pd.orderBY=='2'.toString()">
+		ORDER BY  conversion_percent ${pd.orderAD}
+		</if>
+		<if test="pd.orderBY!=null and pd.orderBY=='3'.toString()">
+		ORDER BY  total_buy_money ${pd.orderAD}
+		</if>
+		LIMIT 
+			#{fromIndex}, #{pageSize}
+	</select>
+	
+	
+	 <!--  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ -->
+	 
+   <!--@author SSY 查询符合条件的会员数量; -->
+	<select id="getCustomerNum" parameterType="page" resultType="int">
+	SELECT 
+		count(customer_id)
+	FROM 
+		aurorascm.sys_customer c
+	WHERE 1=1
+		<if test="pd.phone!=null">
+		AND c.customer_mobile = #{pd.phone}
+		</if>
+		<if test="pd.name!=null">
+		AND c.customer_name = #{pd.name}
+		</if>
+	</select>
+  
+  
+  
+ <!--  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ -->
+ 
+  	 <!--@author SSY 根据时间模糊查询会员数量 -->
+	<select id="getCustomerNumByDate" parameterType="java.lang.String" resultType="int">
+	 SELECT 
+	 	IFNULL(count(customer_id),0) num
+	 FROM 
+	 	aurorascm.sys_customer
+	WHERE  
+		 register_time LIKE CONCAT(#{_parameter},'%')
+	</select>	
+  
+  
+  <!--  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ --> 
+  
+  <!--  查询用户登录时间分布 -->
+  	<select id="getLoginDistribution" parameterType="java.lang.String" resultType="pd">
+	SELECT 
+		IFNULL(SUM(hour1),0) as hour1,IFNULL(SUM(hour2),0) as hour2,IFNULL(SUM(hour3),0) as hour3,
+			IFNULL(SUM(hour4),0) as hour4,IFNULL(SUM(hour5),0) as hour5,IFNULL(SUM(hour6),0) as hour6,
+			IFNULL(SUM(hour7),0) as hour7,IFNULL(SUM(hour8),0) as hour8,IFNULL(SUM(hour9),0) as hour9,
+			IFNULL(SUM(hour10),0) as hour10,IFNULL(SUM(hour11),0) as hour11,IFNULL(SUM(hour12),0) as hour12
+	FROM
+		(
+			SELECT 
+			 	*
+			FROM 
+				aurorascm.s_customer_login_distribution
+			WHERE  
+				customer_id = #{_parameter}
+		) as sss
+		GROUP BY sss.type
+	</select>
+  
+  
+  <!--  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ --> 
+  
+  <!--  查询用户点击类目比例分布 -->
+  	<select id="getClickDistribution" parameterType="java.lang.String" resultType="pd">
+		SELECT 
+			*
+		FROM 
+			aurorascm.s_customer_click
+		WHERE  
+			customer_id = #{_parameter}
+	</select>
+	
+	
+<!--  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ --> 
+  
+  <!--  查询用户购买类目单数比例分布 -->
+  	<select id="getBuyDistribution" parameterType="java.lang.String" resultType="pd">
+	SELECT
+		gc.category_name,gc.category_id,IFNULL(category1_num,0) as category1_num
+	FROM
+		aurorascm.goods_category gc
+	LEFT JOIN 
+		(SELECT
+			category1_id, COUNT(category1_id) as category1_num
+		FROM
+			aurorascm.order_goods g
+		INNER JOIN 
+			aurorascm.order_manage m
+		ON
+			m.order_id = g.order_id
+		INNER JOIN 
+			aurorascm.goods_common c
+		ON
+			g.goods_id = c.goods_id
+		WHERE 
+			m.order_state NOT IN(1,3,9,10)
+		AND
+			m.customer_id = #{_parameter}
+		GROUP BY category1_id) as sss
+	ON 
+		sss.category1_id = gc.category_id
+	WHERE gc.category_level = 1
+	</select>
+		
+<!--  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ --> 
+  
+  <!-- 历史微仓周转时间以及已经发出微仓商品总数 -->
+  	<select id="getOldTurnoverTime" parameterType="java.lang.String" resultType="pd">
+	SELECT
+		day_num as dayNum,num as sendNum
+	FROM
+		aurorascm.s_mw_turnover_rate
+	WHERE 
+		customer_id = #{_parameter}
+	</select>
+	
+	
+<!--  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ --> 
+  
+  <!--  剩余微仓货物总数,以及从进入微仓至当前时间的总天数; -->
+  	<select id="getNewTurnoverTime" parameterType="java.lang.String" resultType="pd">
+	SELECT
+		SUM(goods_num) as remainNum,SUM((IFNULL(TIMESTAMPDIFF(Hour, join_mw_time, NOW()),0) + 1)/24)*SUM(goods_num) as `turnoverDays`
+	FROM
+		aurorascm.mw_goods
+	WHERE 
+		customer_id = #{_parameter}
+	</select>		
+		   
+		   
+		   
+		   
+</mapper>

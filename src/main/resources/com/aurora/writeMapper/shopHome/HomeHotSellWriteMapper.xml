@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="HomeHotSellWriteMapper">
+ 
+ 
+	<!--@author BYG 2018-04-26  新增标题-->
+    <insert id="addTitle" parameterType="com.aurora.entity.home.HotSell">
+    	INSERT INTO  aurorascm.home_hot_sell2
+    		(title_id,title_name,seat,operator,update_time)
+    	VALUES
+    		(#{titleID},#{titleName},#{seat},#{operator},#{updateTime})
+    </insert>
+     
+    <!--@author BYG 2018-04-26  更新标题 -->
+    <update id="updateTitle" parameterType="com.aurora.entity.home.HotSell">
+    	UPDATE  
+    		aurorascm.home_hot_sell2
+    	SET
+    		title_name = #{titleName}
+    	WHERE
+    		title_id = #{titleID}
+    </update>
+    
+        <!--@author BYG 2018-04-26  更新商品 -->
+    <update id="updateGoods" parameterType="com.aurora.entity.home.HotSell">
+    	UPDATE  
+    		aurorascm.home_hot_sell2
+    	SET
+    		goods_id = #{goodsID},
+    		goods_show_name = #{goodsShowName},
+    		goods_show_map = #{goodsShowMap},
+    		operator = #{operator},
+    		update_time = #{updateTime}
+    	WHERE
+			title_id = #{titleID}
+		AND
+			seat = #{seat}
+    </update>
+    
+    	<!--@author BYG 2018-04-26  新增商品-->
+    <insert id="addGoods" parameterType="com.aurora.entity.home.HotSell">
+    	INSERT INTO  aurorascm.home_hot_sell2
+    		(title_id,title_name,seat,goods_id,goods_show_name,goods_show_map,operator,update_time)
+    	VALUES
+    		(#{titleID},#{titleName},#{seat},#{goodsID},#{goodsShowName},#{goodsShowMap},#{operator},#{updateTime})
+    </insert>
+    
+</mapper>

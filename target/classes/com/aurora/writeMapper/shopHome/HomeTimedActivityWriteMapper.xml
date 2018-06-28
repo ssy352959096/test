@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="HomeTimedActivityWriteMapper">
+ 
+ 
+	<!--@author SSY 2018-04-26  新增活动 -->
+    <insert id="addTimedActivity" parameterType="com.aurora.entity.home.TimedActivity">
+    	<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="activityID">
+         	SELECT LAST_INSERT_ID()
+    	 </selectKey>
+    	INSERT INTO  aurorascm.home_timed_activity
+    		(begin_time,end_time,create_time,creator)
+    	VALUES
+    		(#{beginTime},#{endTime},#{createTime},#{creator})
+    </insert>
+     
+    <!--@author SSY 2018-04-26  更新活动 -->
+    <update id="updateTimedActivity" parameterType="com.aurora.entity.home.TimedActivity">
+    	UPDATE  
+    		aurorascm.home_timed_activity
+    	SET
+    		begin_time = #{beginTime},
+    		end_time = #{endTime},
+			update_time = #{updateTime},
+			updator = #{updator}
+    	WHERE
+    		activity_id = #{activityID}
+    </update>
+    
+  
+     
+	<!--@author SSY 2018-04-26  新增活动商品 -->
+    <insert id="addTimedGoods" parameterType="com.aurora.entity.home.TimedGoods">
+    	INSERT INTO  aurorascm.home_timed_goods
+    		(activity_id,goods_id,goods_new_name,discount_price,original_price1,original_price2,available_sell_num,create_time,creator)
+    	VALUES
+    		(#{activityID},#{goodsID},#{goodsNewName},#{discountPrice},#{originalPrice1},#{originalPrice2},#{availableSellNum},#{createTime},#{creator})
+    </insert>
+    
+	<!--@author SSY 2018-04-26  更新活动商品 -->
+    <update id="updateTimedGoods" parameterType="com.aurora.entity.home.TimedGoods">
+   		UPDATE  
+    		aurorascm.home_timed_goods
+    	SET
+    		goods_id = #{goodsID},
+    		goods_new_name = #{goodsNewName},
+    		discount_price = #{discountPrice},
+    		available_sell_num = #{availableSellNum},
+    		original_price1 = #{originalPrice1},
+    		original_price2 = #{originalPrice2},
+    		update_time = #{updateTime},
+			updator = #{updator}
+    	WHERE
+    		id = #{id}
+    </update>
+    
+    
+    <!--@author SSY 2018-04-26  删除活动 -->
+    <delete id="deleteTimedActivity" parameterType="java.lang.Integer">
+    	DELETE g,a FROM 
+    		aurorascm.home_timed_goods g, aurorascm.home_timed_activity a
+    	WHERE 
+    		a.activity_id = #{activityID}
+    	AND
+	    	g.activity_id = #{activityID}
+    </delete>
+    
+       <!--@author SSY 2018-04-26  删除活动商品 -->
+    <delete id="deleteTimedGoods" parameterType="java.lang.Integer">
+    	DELETE  FROM 
+    		aurorascm.home_timed_goods
+    	WHERE 
+    		id = #{id}
+    </delete>
+    
+      
+     <!--@author SSY 2018-04-26 修改商品为活动商品,并保存活动价格和原价 -->
+    <update id="updateGoodsToOriginal" parameterType="com.aurora.entity.home.TimedGoods">
+    	UPDATE  
+    		aurorascm.goods_manage
+    	SET
+    		goods_price1 = #{originalPrice1},
+    		goods_price2 = #{originalPrice2},
+    		is_activity = 2
+    	WHERE
+    	    goods_id = #{goodsID} 
+    </update>
+    
+    
+    <!--@author SSY 2018-04-26 修改商品为活动商品,并保存活动价格和原价 -->
+    <update id="updateGoodsToActivity" parameterType="com.aurora.entity.home.TimedGoods">
+    	UPDATE  
+    		aurorascm.goods_manage
+    	SET
+    		goods_price1 = #{discountPrice},
+    		goods_price2 = #{discountPrice},
+    		original_price1 = #{originalPrice1}, 
+    		original_price2 = #{originalPrice2},
+    		is_activity = 1
+    	WHERE
+    	    goods_id = #{goodsID} 
+    </update>
+     
+    
+    <!--@author SSY 2018-04-26 关掉活动 -->
+    <update id="updateActivityDown" parameterType="com.aurora.entity.home.TimedActivity">
+    	UPDATE  
+    		aurorascm.home_timed_activity
+    	SET
+    		activity_state = 3
+    	WHERE
+    	    activity_id = #{activityID}
+    </update>
+    
+    
+     <!--@author SSY 2018-04-26 开启活动 -->
+    <update id="updateActivityOn" parameterType="com.aurora.entity.home.TimedActivity">
+    	UPDATE  
+    		aurorascm.home_timed_activity
+    	SET
+    		activity_state = 2
+    	WHERE
+    	    activity_id = #{activityID}
+    </update>
+    
+     <!--@author SSY 2018-05-18 累加活动商品已售数量-->
+    <update id="updateActivitySoldNum" >
+	    UPDATE 
+	    	aurorascm.home_timed_goods g
+		INNER JOIN 
+			aurorascm.home_timed_activity m
+		ON 
+			g.activity_id = m.activity_id
+		SET
+			g.sold_num = g.sold_num+ceil(((g.available_sell_num-g.sold_num)/TIMESTAMPDIFF(HOUR,NOW(),m.end_time)))
+		WHERE 
+			m.activity_state = 2
+		AND 
+			g.sold_num &lt; g.available_sell_num
+     </update>
+    
+     <!--@author SSY 2018-05-18 更新活动商品售卖状态,,1可售,2已售罄-->
+     <update id="updateActivityGoodsState" >
+	    UPDATE 
+	    	aurorascm.home_timed_goods 
+		SET
+			activity_goods_state = 2
+		WHERE 
+			sold_num &gt;= available_sell_num
+     </update>
+    
+    
+     
+    
+</mapper>

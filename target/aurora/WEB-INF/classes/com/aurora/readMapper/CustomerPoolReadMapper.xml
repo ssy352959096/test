@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CustomerPoolReadMapper">
+
+ <!-- 条件查询商城客户池列表;客服和运营专属 -->
+	<select id="getCustomerPool" parameterType="page" resultType="pd">
+	SELECT 
+		sysc.customer_id,sysc.customer_mobile,IF(sysc.customer_name='',sysc.customer_email,sysc.customer_name) as customer_name,
+			sysc.sales_manager,IFNULL(sysu.user_real_name,sysu.user_email) as sales_name,sysc.update_salesman_date,
+			(	
+				SELECT
+					IFNULL(SUM(m.pay_money),0.00)
+				FROM
+					aurorascm.order_manage m
+				WHERE 
+					sysc.customer_id = m.customer_id
+				AND 
+					m.order_state NOT IN (1,3,9,10)
+			) as total_buy_money
+	FROM
+		aurorascm.sys_customer sysc
+	LEFT JOIN 
+		aurora.sys_user sysu
+	ON 
+		sysc.sales_manager = sysu.user_id
+	WHERE 1=1
+		<if test="pd.salesmanID!=null">
+		AND sysc.sales_manager = #{pd.salesmanID}
+		</if>
+		<if test="pd.salesmanID==null and pd.roleID=='6'.toString()"><!-- 如果是销售人员,并且没有选择客户池类型,显示公池和个人专属客户 -->
+		AND sysc.sales_manager IN (#{pd.userID},888)
+		</if>
+		<if test="pd.phone!=null">
+		AND sysc.customer_mobile = #{pd.phone}
+		</if>
+		<if test="pd.name!=null">
+		AND (sysc.customer_name = #{pd.name}
+			OR sysc.customer_email = #{pd.name})
+		</if>
+		<if test="pd.orderBY!=null and pd.orderBY=='1'.toString()">
+		ORDER BY  total_buy_money ${pd.orderAD}
+		</if>
+		<if test="pd.orderBY!=null and pd.orderBY=='2'.toString()">
+		ORDER BY  sysc.update_salesman_date ${pd.orderAD}
+		</if>
+		LIMIT 
+			#{fromIndex}, #{pageSize}
+	</select>
+	
+ <!-- 条件查询商城客户池数量; -->
+	<select id="getCustomerPoolNum" parameterType="pd" resultType="int">
+	SELECT 
+		count(customer_id) as customer_num
+	FROM
+		aurorascm.sys_customer  
+	WHERE 1=1
+		<if test="salesmanID!=null">
+		AND sales_manager = #{salesmanID}
+		</if>
+		<if test="salesmanID==null and roleID=='6'.toString()"><!-- 如果是销售人员,并且没有选择客户池类型,显示公池和个人专属客户 -->
+		AND sales_manager IN (#{userID},888)
+		</if>
+		<if test="phone!=null">
+		AND customer_mobile = #{phone}
+		</if>
+		<if test="name!=null">
+		AND (customer_name = #{name}
+			OR customer_email = #{name})
+		</if>
+	</select>	
+	
+	
+	<!-- 条件查询销售代表 -->
+	<select id="getSalesman" parameterType="pd" resultType="pd">
+	SELECT 
+		*
+	FROM
+		aurora.sys_user
+	WHERE 
+		user_role_id = 6
+		<if test="roleID!=null and roleID=='6'.toString()">
+		AND user_id IN (#{userID},888)
+		</if>
+		
+	</select>	
+	
+	
+	
+	
+	
+	
+	
+
+</mapper>

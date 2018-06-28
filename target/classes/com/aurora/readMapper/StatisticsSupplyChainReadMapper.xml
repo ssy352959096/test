@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="StatisticsSupplyChainReadMapper">
+
+<!-- 列表展示商品库存信息 -->
+	<select id="getGoodsStockList" parameterType="page" resultType="pd">
+	SELECT
+		c.goods_id ,c.goods_name,c.ship_typen,m.goods_stock as false_stock, IFNULL(SUM(gcs.stock),0) as true_stock
+	FROM
+		aurorascm.goods_common c
+	INNER JOIN
+		aurorascm.goods_manage m
+	ON
+		c.goods_id = m.goods_id
+	LEFT JOIN
+		aurorascm.goods_cost_stock  gcs
+	ON 
+		c.goods_id = gcs.goods_id
+	WHERE 1=1
+		<if test="pd.shipType!=null">
+			AND c.ship_type = #{pd.shipType}
+		</if>
+		<if test="pd.goodsName!=null">
+			AND c.goods_name LIKE CONCAT ('%', #{pd.goodsName},'%')
+		</if>
+		<if test="pd.goodsID!=null">
+			AND c.goods_id = #{pd.goodsID}
+		</if>
+	GROUP BY  c.goods_id ,c.goods_name,c.ship_typen,m.goods_stock 
+	<if test="pd.orderBY!=null and pd.orderBY=='1'.toString()">
+		ORDER BY false_stock ${pd.orderAD}
+		</if>
+	<if test="pd.orderBY!=null and pd.orderBY=='2'.toString()">
+		ORDER BY true_stock ${pd.orderAD}
+		</if>
+	LIMIT 
+		#{fromIndex}, #{pageSize}
+	 </select>
+	 
+	 
+	 
+	 <!-- 条件获取供应链商品数量 -->
+	<select id="getGoodsNum" parameterType="page" resultType="int">
+	SELECT
+		count(c.goods_id) num
+	FROM
+		aurorascm.goods_common c
+	INNER JOIN
+		aurorascm.goods_manage m
+	ON
+		c.goods_id = m.goods_id
+	WHERE 1=1
+		<if test="pd.shipType!=null">
+			AND c.ship_type = #{pd.shipType}
+		</if>
+		<if test="pd.goodsName!=null">
+			AND c.goods_name LIKE CONCAT ('%', #{pd.goodsName},'%')
+		</if>
+		<if test="pd.goodsID!=null">
+			AND c.goods_id = #{pd.goodsID}
+		</if>
+	 </select>
+	 
+	 
+	 
+	 
+	 
+	 
+	   
+</mapper>

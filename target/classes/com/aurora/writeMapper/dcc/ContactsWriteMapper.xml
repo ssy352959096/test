@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ContactsWriteMapper">
+	<sql id="ContactsFields">
+		contacts_id,
+		enterprise_id,
+		contacts,
+		telephone,
+		post,
+		e_mail,
+		fax,
+		weixin,
+		qq,
+		enterprise_website,
+		remarks,
+		update_time,
+		update_name
+	</sql>
+	<sql id="ContactsFieldValues">
+		#{contactsId},
+		#{enterpriseId},
+		#{contacts},
+		#{telephone},
+		#{post},
+		#{e_mail},
+		#{fax},
+		#{weixin},
+		#{qq},
+		#{enterpriseWebsite},
+		#{remarks},
+		#{updateTime},
+		#{updateName}
+	</sql>
+   <!--@author KJH  @date 2018年6月26日 上午9:19:30  添加企业信息联系人 -->
+	<insert id="addContactsInFo" parameterType="com.aurora.entity.dcc.Contacts">
+		INSERT INTO dcc.contacts_info(
+		<include refid="ContactsFields"></include>
+		) VALUES(
+		<include refid="ContactsFieldValues"></include>
+		)
+	</insert>
+	<!--@author KJH  @date 2018年6月26日 上午9:19:30  修改企业信息联系人 -->
+	<update id="updateContactsInFo" parameterType="com.aurora.entity.dcc.Contacts">
+		UPDATE dcc.contacts_info SET
+		enterprise_id=#{enterpriseId},
+		contacts=#{contacts},
+		telephone=#{telephone},
+		post=#{telephone},
+		e_mail=#{e_mail},
+		fax=#{fax},
+		weixin=#{weixin},
+		qq=#{qq},
+		enterprise_website=#{enterpriseWebsite},
+		remarks=#{remarks},
+		update_time=#{updateTime},
+		update_name=#{updateName}
+		WHERE
+		contacts_id=#{contactsId}
+	</update>
+	<!--@author KJH  @date 2018年6月26日 上午9:19:30  删除企业信息联系人 -->
+	<delete id="deleteContactsInFo" parameterType="java.lang.Integer">
+		DELETE FROM dcc.contacts_info WHERE
+		contacts_id=#{contactsId}
+	</delete>
+</mapper>

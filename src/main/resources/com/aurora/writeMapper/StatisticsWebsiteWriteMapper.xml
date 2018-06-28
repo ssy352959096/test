@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="StatisticsWebsiteWriteMapper">
+
+<!-- pv/uv 字段 -->
+	<sql id="PvUvField">
+ 		date,
+ 		day_num,
+ 		hour0,
+ 		hour1,
+ 		hour2,
+ 		hour3,
+ 		hour4,
+ 		hour5,
+ 		hour6,
+ 		hour7,
+ 		hour8,
+ 		hour9,
+ 		hour10,
+ 		hour11,
+ 		hour12,
+ 		hour13,
+ 		hour14,
+ 		hour15,
+ 		hour16,
+ 		hour17,
+ 		hour18,
+ 		hour19,
+ 		hour20,
+ 		hour21,
+ 		hour22,
+ 		hour23,
+ 		update_last_time
+	</sql>
+	<!-- pv/uv 字段值 -->
+	<sql id="PvUvFieldValue">
+ 		#{date},
+ 		#{sum},
+ 		#{hour0},
+ 		#{hour1},
+ 	    #{hour2},
+ 	    #{hour3},
+ 	    #{hour4},
+ 	    #{hour5},
+ 	    #{hour6},
+ 	    #{hour7},
+ 	    #{hour8},
+ 	    #{hour9},
+ 	    #{hour10},
+ 	    #{hour11},
+ 	    #{hour12},
+ 	    #{hour13},
+ 	    #{hour14},
+ 	    #{hour15},
+ 	    #{hour16},
+ 	    #{hour17},
+ 	    #{hour18},
+ 	    #{hour19},
+ 	    #{hour20},
+ 	    #{hour21},
+ 	    #{hour22},
+ 	    #{hour23},
+ 	    NOW()
+	</sql>
+	
+	<!-- pv/uv修改 sql片段 -->
+	<sql id="PvUvUpdate">
+ 		day_num = #{sum},
+ 		hour0 = #{hour0},
+ 		hour1 = #{hour1},
+ 		hour2 = #{hour2},
+ 		hour3 = #{hour3},
+ 		hour4 = #{hour4},
+ 		hour5 = #{hour5},
+ 		hour6 = #{hour6},
+ 		hour7 = #{hour7},
+ 		hour8 = #{hour8},
+ 		hour9 = #{hour9},
+ 		hour10 = #{hour10},
+ 		hour11 = #{hour11},
+ 		hour12 = #{hour12},
+ 		hour13 = #{hour13},
+ 		hour14 = #{hour14},
+ 		hour15 = #{hour15},
+ 		hour16 = #{hour16},
+ 		hour17 = #{hour17},
+ 		hour18 = #{hour18},
+ 		hour19 = #{hour19},
+ 		hour20 = #{hour20},
+ 		hour21 = #{hour21},
+ 		hour22 = #{hour22},
+ 		hour23 = #{hour23},
+ 		update_last_time = NOW()
+	</sql>
+
+	<!--  首页热点更新  sql片段 -->
+	<sql id="UpdateHomeClick">
+ 	 	<if test="module1!=null">module1 = #{module1},</if>
+ 	 	<if test="module2!=null">module2 = #{module2},</if>
+ 	 	<if test="module3!=null">module3 = #{module3},</if>
+ 	 	<if test="module4!=null">module4 = #{module4},</if>
+ 	 	<if test="module5!=null">module5 = #{module5},</if>
+ 	 	<if test="module6!=null">module6 = #{module6},</if>
+ 	 	<if test="module7!=null">module7 = #{module7},</if>
+ 	 	<if test="module8!=null">module8 = #{module8},</if>
+ 	 	<if test="module9!=null">module9 = #{module9},</if>
+ 	 	<if test="module10!=null">module10 = #{module10},</if>
+ 	 	<if test="module11!=null">module11 = #{module11},</if>
+ 	 	<if test="module12!=null">module12 = #{module12},</if>
+ 	 	<if test="module13!=null">module13 = #{module13},</if>
+ 	 	<if test="module14!=null">module14 = #{module14},</if>
+ 	 	<if test="module15!=null">module15 = #{module15},</if>
+ 	 	<if test="module16!=null">module16 = #{module16},</if>
+ 	 	<if test="module17!=null">module17 = #{module17},</if>
+ 	 	<if test="module18!=null">module18 = #{module18},</if>
+ 	 	<if test="module19!=null">module19 = #{module19},</if>
+ 	 	<if test="module20!=null">module20 = #{module20},</if>
+ 	 	<if test="module21!=null">module21 = #{module21},</if>
+ 	 	<if test="module22!=null">module22 = #{module22},</if>
+ 	 	<if test="module23!=null">module23 = #{module23},</if>
+ 	 	<if test="module24!=null">module24 = #{module24},</if>
+ 	 	<if test="module25!=null">module25 = #{module25},</if>
+ 	 	<if test="module26!=null">module26 = #{module26},</if>
+ 	 	<if test="module27!=null">module27 = #{module27},</if>
+ 	 	<if test="module28!=null">module28 = #{module28},</if>
+ 	 	<if test="module29!=null">module29 = #{module29},</if>
+ 	 	<if test="module30!=null">module30 = #{module30},</if>
+ 	 	last_update_time = NOW()
+	</sql>
+
+	 
+	<!-- @author SSY 2018-03-28 首页模块点击次数定时更新*******首页热力图 -->
+	<!--<update id="updateModuleClickTimes" parameterType="pd">
+		UPDATE
+			aurorascm.s_module_click
+		SET
+			click_num = #{clickTimes}
+		WHERE
+			module_code = #{moduleCode}
+	</update>-->
+	
+	<!-- @author SSY 2018-03-29   首页热点图  百度统计定时更新 -->
+	  <insert id="updateHomeClick" parameterType="pd"> 
+        <selectKey keyProperty="count" resultType="int" order="BEFORE"> 
+			SELECT
+				count(id) as num
+			FROM
+				aurorascm.s_home_click 
+			WHERE
+				date = #{date}
+        </selectKey> 
+        <!-- 如果大于0则更新 --> 
+        <if test="count>0"> 
+            UPDATE 
+				aurorascm.s_home_click 
+			SET
+				<include refid="UpdateHomeClick"></include>  
+			WHERE
+				date = #{date}
+		</if> 
+        <!-- 如果等于0则新增  本次只是新增一条时间记录,下次再更新--> 
+        <if test="count==0">
+			INSERT INTO
+				aurorascm.s_home_click
+			(
+				date 
+			) VALUES (
+				#{date} 
+			)
+        </if> 
+    </insert>
+	 
+	
+	<!-- @author SSY 2018-03-28  pv  百度统计定时更新 -->
+	  <insert id="updatePV" parameterType="pd"> 
+        <selectKey keyProperty="count" resultType="int" order="BEFORE"> 
+			SELECT
+				count(id) as num
+			FROM
+				aurorascm.s_pv 
+			WHERE
+				date = #{date}
+        </selectKey> 
+        <!-- 如果大于0则更新 --> 
+        <if test="count>0"> 
+            UPDATE 
+				aurorascm.s_pv 
+			SET
+			 <include refid="PvUvUpdate"></include>
+			WHERE
+				date = #{date}
+		</if> 
+        <!-- 如果等于0则保存 --> 
+        <if test="count==0">
+			INSERT INTO
+				aurorascm.s_pv
+			(
+				<include refid="PvUvField"></include> 
+			) VALUES (
+				 <include refid="PvUvFieldValue"></include> 
+			)
+        </if> 
+    </insert>
+	 
+	<!-- @author SSY 2018-03-28 uv 百度统计定时更新 -->
+	  <insert id="updateUV" parameterType="pd"> 
+        <selectKey keyProperty="count" resultType="int" order="BEFORE"> 
+			SELECT
+				count(id) as num
+			FROM
+				aurorascm.s_uv 
+			WHERE
+				date = #{date}
+        </selectKey> 
+        <!-- 如果大于0则更新 --> 
+        <if test="count>0"> 
+            UPDATE 
+				aurorascm.s_uv 
+			SET
+			 <include refid="PvUvUpdate"></include>
+			WHERE
+				date = #{date}
+		</if> 
+        <!-- 如果等于0则保存 --> 
+        <if test="count==0">
+			INSERT INTO
+				aurorascm.s_uv
+			(
+				<include refid="PvUvField"></include> 
+			) VALUES (
+				 <include refid="PvUvFieldValue"></include> 
+			)
+        </if> 
+    </insert>
+	   
+	   
+	
+ 
+	   
+</mapper>

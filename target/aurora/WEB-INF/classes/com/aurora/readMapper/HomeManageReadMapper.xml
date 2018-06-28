@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="HomeManageReadMapper">
+
+	<!-- BYG 获取一级类目 -->
+	<select id="getCategory1" resultType="pd">
+		SELECT
+		category_id,
+		category_name
+		FROM
+		aurorascm.goods_category
+		WHERE
+		category_level = '1'
+		ORDER BY
+		location_sort ASC
+	</select>
+	
+	<!-- BYG 获取一级类目 （专为本站热卖加爱他美+喜宝用）-->
+	<select id="getCategory14" resultType="pd">
+		SELECT
+		category_id,
+		category_name
+		FROM
+		aurorascm.goods_category
+		WHERE
+		category_level = '1'
+		OR
+		category_level = '4'
+		ORDER BY
+		location_sort ASC
+	</select>
+
+	<!-- BYG 根据 商品ID搜索商品 -->
+	<select id="serchGoods" parameterType="pd" resultType="pd">
+		SELECT
+		c.goods_id,
+		c.goods_name,
+		c.goods_code,
+		c.main_map
+		FROM
+		aurorascm.goods_common c
+		INNER JOIN
+		aurorascm.goods_manage m
+		ON
+		c.goods_id = m.goods_id
+		WHERE
+		c.goods_id = #{goodsID}
+		AND
+		c.category1_id =
+		#{category1ID}
+		AND
+		m.goods_state = '4'
+	</select>
+
+	<!-- BYG 根据 页码/一级类目ID 获取本站热卖商品 -->
+	<select id="getHotSellList" parameterType="pd" resultType="pd">
+		SELECT
+		c.goods_id,
+		c.goods_name,
+		c.goods_code,
+		h.advertise_map,
+		h.operate_time,
+		h.location_sort,
+		h.goods_name_new
+		FROM
+		aurorascm.home_hot_sell h
+		INNER JOIN
+		aurorascm.goods_common c
+		ON
+		h.goods_id = c.goods_id
+		WHERE
+		h.category1_id = #{category1ID}
+		ORDER BY
+		h.location_sort
+		LIMIT
+		0, 10
+	</select>
+
+	<!-- BYG 根据 页码/位置排序/一级类目ID 获取本站热卖商品ID -->
+	<select id="getHomeHotSellID" parameterType="pd" resultType="pd">
+		SELECT
+		id
+		FROM
+		aurorascm.home_hot_sell
+		WHERE
+		category1_id = #{category1ID}
+		AND
+		location_sort = #{locationSort}
+
+	</select>
+
+
+	<!-- @author SSY 获取热门品牌信息(页码,位置,品牌id,品牌名称,操作时间,brand_map,brand_describe1) -->
+	<select id="getHotBrand" parameterType="int" resultType="pd">
+		SELECT
+		h.id,
+		h.brand_id,
+		h.band_name,
+		h.location_sort,
+		h.page_num,
+		h.operate_time,
+		b.brand_map,
+		b.advertise_map,
+		b.recommend_map,
+		b.brand_describe1
+		FROM
+		aurorascm.home_hot_brand h
+		INNER JOIN
+		aurorascm.brand b
+		ON
+		h.brand_id
+		= b.brand_id
+		WHERE
+		h.page_num = #{pageNum}
+
+	</select>
+
+	<!-- @author SSY 根据品牌id获取品牌信息 -->
+	<select id="getBrand" parameterType="String" resultType="pd">
+		SELECT
+		b.brand_id,
+		b.brand_name,
+		b.brand_map,
+		b.advertise_map,
+		b.recommend_map,
+		b.brand_describe1
+		FROM
+		aurorascm.brand b
+
+		WHERE
+		b.brand_id = #{brandId}
+
+	</select>
+
+	<!-- @author SSY 根据热门品牌位置location_sort,page_num获取该热门品牌信息 -->
+	<select id="getHotBrandByLoction" parameterType="pd" resultType="int">
+		SELECT
+		count(id)
+		FROM
+		aurorascm.home_hot_brand
+
+		WHERE
+		page_num= #{pageNum}
+		AND
+		location_sort= #{locationSort}
+
+	</select>
+
+	<!-- @author SSY 根据页码page_num获取新货商品信息 -->
+	<select id="getNewGoods" parameterType="int" resultType="pd">
+		SELECT
+		n.id,
+		n.goods_id,
+		n.location_sort,
+		n.page_num,
+		n.operate_time,
+		m.goods_price2,
+		c.goods_name,
+		c.main_map,
+		c.goods_code,
+		n.goods_name_new
+		FROM
+		aurorascm.home_new_goods n
+		INNER JOIN
+		aurorascm.goods_manage m
+		ON
+		n.goods_id = m.goods_id
+		INNER JOIN
+		aurorascm.goods_common c
+		ON
+		n.goods_id
+		= c.goods_id
+		WHERE
+		n.page_num= #{pageNum}
+		AND
+		m.goods_state=4
+	</select>
+
+	<!-- @author SSY 根据商品id 新货推荐预览 查询商品信息(商品id/商品名称/价格/图片/条码/交易额) -->
+	<select id="getGoods" parameterType="pd" resultType="pd">
+		SELECT
+		c.goods_id,
+		c.goods_name,
+		c.main_map,
+		c.goods_code,
+		m.goods_price2,
+		m.fake_sales
+		FROM
+		aurorascm.goods_common c
+		INNER JOIN
+		aurorascm.goods_manage m
+		ON
+		c.goods_id = m.goods_id
+		WHERE
+		c.goods_id= #{goodsId}
+		<if test=" shipType != null">
+			AND
+			c.ship_type = #{shipType}
+		</if>
+		AND
+		m.goods_state=4
+	</select>
+
+	<!-- @author SSY 根据页码page_num/邮寄方式ship_type获取海外直邮/保税仓热卖信息 -->
+	<select id="getHbHotSell" parameterType="pd" resultType="pd">
+		SELECT
+		h.hb_id,
+		h.goods_id,
+		h.location_sort,
+		h.operate_time,
+		m.goods_price2,
+		m.fake_sales,
+		c.goods_name,
+		c.main_map,
+		c.goods_code,
+		h.goods_name_new,
+		h.month_turnover
+		FROM
+		aurorascm.home_hb_sell h
+		INNER JOIN
+		aurorascm.goods_manage m
+		ON
+		h.goods_id = m.goods_id
+		INNER JOIN
+		aurorascm.goods_common c
+		ON
+		h.goods_id = c.goods_id
+		WHERE
+		h.ship_type=
+		#{shipType}
+		AND
+		m.goods_state = 4
+	</select>
+
+
+	<!-- @author SSY 根据品牌位置/数据库类目表默认第一个类目查询小额批发 -->
+	<select id="getHomeLessBuy" parameterType="pd" resultType="pd">
+		SELECT
+		l.hls_id,
+		l.brand_id,
+		l.brand_name,
+		l.blocation_sort,
+		l.glocation_sort,
+		l.operate_time,
+		l.goods_id,
+		l.category1_id,
+		l.goods_name_new,
+		gc.category_name,
+		c.goods_code,
+		c.goods_name,
+		c.ship_type,
+		c.ship_typen,
+		m.goods_price2,
+		m.rnum1
+		FROM
+		aurorascm.home_less_buy l
+		INNER JOIN
+		aurorascm.goods_manage m
+		ON
+		l.goods_id = m.goods_id
+		INNER JOIN
+		aurorascm.goods_common c
+		ON
+		l.goods_id = c.goods_id
+		INNER JOIN
+		aurorascm.goods_category gc
+		ON
+		l.category1_id = gc.category_id
+		WHERE
+		l.blocation_sort= #{blocationSort}
+		AND
+		m.goods_state = 4
+		AND
+		<if test=" category1ID == null">
+			l.category1_id = (
+			SELECT
+			category_id
+			FROM
+			aurorascm.goods_category
+			LIMIT 1)
+		</if>
+		<if test=" category1ID != null">
+			l.category1_id = #{category1ID}
+		</if>
+	</select>
+
+	<!-- @author SSY 根据品牌B(String brandId)/类目C(String category1ID)/商品GId (String 
+		GoodsId)查询商品; -->
+	<select id="getGoodsByBCGId" parameterType="pd" resultType="pd">
+		SELECT
+		c.goods_id,
+		c.goods_name,
+		c.goods_code,
+		m.goods_price1,
+		m.rnum1,
+		m.ship_type
+		FROM
+		aurorascm.goods_common c
+		INNER JOIN
+		aurorascm.goods_manage m
+		ON
+		c.goods_id = m.goods_id
+		INNER JOIN
+		aurorascm.goods_category cat
+		ON
+		c.category1_id = cat.category_id
+		WHERE
+		cat.category_id = #{category1ID}
+		AND
+		c.goods_id = #{GoodsId}
+		AND
+		c.brand_id = #{brandId}
+		AND
+		m.goods_state = 4
+	</select>
+
+
+	<!-- @author SSY 查询大额采购列表 -->
+	<select id="getHomeLargeBuy" parameterType="page" resultType="pd">
+		SELECT
+		l.*,
+		c.goods_name,
+		b.brand_name
+		FROM
+		aurorascm.home_large_buy l
+		INNER JOIN
+		aurorascm.goods_common c
+		ON
+		l.goods_id = c.goods_id
+		INNER JOIN
+		aurorascm.brand b
+		ON
+		b.brand_id = l.brand_id
+		WHERE 1=1
+		<if test="pd.category1ID !=null">
+			AND l.category1_id = #{pd.category1ID}
+		</if>
+		ORDER BY
+		l.operate_time DESC
+		LIMIT
+		#{fromIndex},#{pageSize}
+
+	</select>
+
+
+	<!-- @author SSY 查询大额采购列表 -->
+	<select id="getNumHLB" parameterType="page" resultType="int">
+		SELECT
+		count( goods_id)
+		FROM
+		aurorascm.home_large_buy
+		WHERE 1=1
+		<if test="pd.category1ID !=null">
+			AND category1_id = #{pd.category1ID}
+		</if>
+	</select>
+
+	<!-- @author SSY 根据类目 category1ID 商品 GoodsId 查询的商品信息; -->
+	<select id="getGoodsByCGId" parameterType="pd" resultType="pd">
+		SELECT
+		c.goods_id,
+		c.goods_name,
+		c.brand_id
+		FROM
+		aurorascm.goods_common c
+		INNER JOIN
+		aurorascm.goods_manage m
+		ON
+		c.goods_id = m.goods_id
+		WHERE
+		c.category1_id = #{category1ID}
+		AND
+		c.goods_id = #{goodsID}
+		AND
+		m.goods_state = 4
+	</select>
+
+	<!-- @author SSY 根据(String tjType)查询淘宝&京东热卖信息 -->
+	<select id="gethomeTbHotSell" parameterType="String" resultType="pd">
+		SELECT
+		tj.id tj_id,
+		tj.goods_id,
+		tj.location_sort,
+		tj.operate_time,
+		tj.price_trend_index,
+		tj.price_trend_sign,
+		tj.sale_trend_index,
+		tj.sale_trend_sign,
+		tj.time_period,
+		tj.goods_name_new,
+		c.goods_name,
+		c.goods_code
+		FROM
+		aurorascm.home_tj_sell tj
+		INNER JOIN
+		aurorascm.goods_common c
+		ON
+		tj.goods_id = c.goods_id
+		INNER JOIN
+		aurorascm.goods_manage m
+		ON
+		tj.goods_id = m.goods_id
+		WHERE
+		tj.tj_type = #{tjType}
+		AND
+		m.goods_state = 4
+	</select>
+
+	<!-- @author SSY 根据类目C(String category1ID)/商品GId (String GoodsId)查询商品的大额采购信息; -->
+	<select id="getHotKeyWord" parameterType="pd" resultType="pd">
+		SELECT
+		word,
+		operator,
+		operate_time
+		FROM
+		aurorascm.home_search_word
+		LIMIT 1
+	</select>
+
+
+	<!-- 根据商品id查询商品是否设置在首页热搜中 -->
+	<select id="getHomeGoods" parameterType="pd" resultType="pd">
+		SELECT
+		goods_id
+		FROM
+		aurorascm.home_hb_sell
+		WHERE
+		goods_id = #{goodsID}
+		UNION
+		SELECT
+		goods_id
+		FROM
+		aurorascm.home_hot_sell
+		WHERE
+		goods_id = #{goodsID}
+		UNION
+		SELECT
+		goods_id
+		FROM
+		aurorascm.home_less_buy
+		WHERE
+		goods_id = #{goodsID}
+		UNION
+		SELECT
+		goods_id
+		FROM
+		aurorascm.home_new_goods
+		WHERE
+		goods_id = #{goodsID}
+		UNION
+		SELECT
+		goods_id
+		FROM
+		aurorascm.home_tj_sell
+		WHERE
+		goods_id = #{goodsID}
+	</select>
+
+	
+
+</mapper>

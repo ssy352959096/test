@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserWriteMapper">
+
+	<!-- 字段 -->
+	<sql id="Field">
+		user_real_name,
+		user_name,
+		user_mobile,
+		user_password,
+		user_email,
+		user_role_id,
+		user_status
+	</sql>
+
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{userRealName},
+		#{userName},
+		#{userMobile},
+		#{userPassword},
+		#{userEmail},
+		#{userRoleID},
+		#{userStatus}
+	</sql>
+		
+	<!-- 更新登录时间 -->
+	<update id="updateUserLastLoginTime" parameterType="pd" >
+		UPDATE 
+			aurora.sys_user
+		SET
+			user_last_login_time= #{userLastLoginTime} 
+		WHERE 
+			user_id = #{userID}
+	</update>
+	
+	<!-- 更新用户状态  禁用用户状态只能通过管理员信息修改进行启用;-->
+	<update id="updateUserStatus" parameterType="pd" >
+		UPDATE 
+			aurora.sys_user
+		SET
+			user_status= #{userStatus}
+		WHERE 
+			user_id = #{userID}
+		AND
+			user_status != 4
+	</update>
+	
+	<!-- 新增用户 -->
+	<insert id="saveNewUser" parameterType="pd" >
+		INSERT INTO
+			aurora.sys_user
+		(
+			<include refid="Field"></include>
+		) VALUES (
+			<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 存入IP以及登陆时间 -->
+	<update id="saveIP" parameterType="pd" >
+		UPDATE
+			aurora.sys_user
+		SET
+			user_ip = #{userIP},
+			user_last_login_time = #{time}
+		WHERE 
+			user_email = #{userEmail}
+	</update>
+
+	<!-- 删除单个用户 -->
+	<delete id="deleteOneUser" parameterType="pd" flushCache="false">
+		DELETE FROM 
+			aurora.sys_user
+		WHERE 
+			user_id = #{userID}
+		AND 
+			user_name != 'admin'
+	</delete>
+	
+	<!-- 批量删除用户 -->
+	<delete id="deleteSomeUser" parameterType="int" >
+		DELETE FROM 
+			aurora.sys_user
+		WHERE 
+			user_id in
+  			 <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                  #{item}
+             </foreach>
+        AND 
+			user_id != '1'
+	</delete>
+	
+	<!-- 管理员修改系统用户资料 -->
+	<update id="saveEditSystemUser" parameterType="pd" >
+		UPDATE
+			aurora.sys_user
+		SET
+			user_real_name 			= #{userRealName},
+			user_name 				= #{userName},
+			user_mobile				= #{userMobile},
+			user_email				= #{userEmail},
+			user_role_id			= #{userRoleID},
+			user_status				= #{userStatus},
+		  	user_password			= #{userPassword} 
+		WHERE 
+			user_id = #{userID}
+	</update>
+	
+	<!-- 修改个人资料 -->
+	<update id="updateMyUser" parameterType="pd" >
+		UPDATE
+			aurora.sys_user
+		SET
+		<if test="newPassword != null"><!-- 修改密码 -->
+			user_password = #{newPassword}
+			</if>
+		<if test="newPassword == null"><!-- 修改个人基本资料 -->
+			user_real_name 			= #{userRealName},
+			user_name 				= #{userName},
+			user_mobile				= #{userMobile}
+		</if>
+		WHERE 
+			user_email = #{userEmail}
+	</update>
+	
+</mapper>

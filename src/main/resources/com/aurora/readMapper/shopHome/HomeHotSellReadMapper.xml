@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="HomeHotSellReadMapper">
+
+	
+	<resultMap type="com.aurora.entity.home.HotSell" id="HotSellResultMap">
+		<id column="id" property="id"/>
+		<result column="title_id" property="titleID"/>
+		<result column="title_name" property="titleName"/>
+		<result column="seat" property="seat"/>
+		<result column="goods_id" property="goodsID"/>
+		<result column="goods_show_name" property="goodsShowName"/>
+		<result column="goods_show_map" property="goodsShowMap"/>
+		<result column="update_time" property="updateTime"/>
+	</resultMap>
+	
+	
+	<!-- @author BYG 2018-04-27  获取 商品列表-->
+	<select id="getHotSellListByTitleID" parameterType="int" resultMap="HotSellResultMap">
+		SELECT		*
+		FROM		aurorascm.home_hot_sell2
+		WHERE		title_id = #{titleID}
+		ORDER BY	seat ASC
+	</select>
+	
+	<!-- @author BYG 2018-04-27  获取拥有titleID的记录数-->
+	<select id="getIDByTitleID" parameterType="int" resultType="int">
+		SELECT		COUNT(id) count
+		FROM		aurorascm.home_hot_sell2
+		WHERE		title_id = #{titleID}
+	</select>
+
+	<!-- @author BYG 2018-04-27  根据标题ID和位置获取 商品-->
+	<select id="getCountIDByTitleIDAndSeat" parameterType="com.aurora.entity.home.HotSell" resultType="int">
+		SELECT		COUNT(id) count
+		FROM		aurorascm.home_hot_sell2
+		WHERE		title_id = #{titleID}
+		AND			seat = #{seat}
+	</select>
+
+</mapper>

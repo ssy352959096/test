@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="HomeTopBrandWriteMapper">
+ 
+ 
+	<!--@author BYG 2018-04-26  新增标题-->
+    <insert id="addTopBrand" parameterType="java.util.List">
+    	INSERT INTO  aurorascm.home_top_brand
+    		(page_number,seat,brand_id,brand_name,brand_show_map,operator,update_time)
+    	VALUES
+    		<foreach collection="list" index="index" item="item" separator="," >
+    			(#{item.pageNumber},#{item.seat},#{item.brandID},#{item.brandName},#{item.brandShowMap},#{item.operator},#{item.updateTime})
+    		</foreach> 
+    </insert>    
+        <!--@author BYG 2018-04-26  更新商品 -->
+    <update id="updateTopBrand" parameterType="java.util.List">
+    	UPDATE		aurorascm.home_top_brand
+    	SET		page_number =
+			    <foreach collection="list" index="index" item="item" separator=" " open="case id" close="end">
+			        when #{item.id} then #{item.pageNumber}
+			    </foreach>
+    			,seat =
+			    <foreach collection="list" index="index" item="item" separator=" " open="case id" close="end">
+			        when #{item.id} then #{item.seat}
+			    </foreach>
+		    	,brand_id =
+			    <foreach collection="list" index="index" item="item" separator=" " open="case id" close="end">
+			        when #{item.id} then #{item.brandID}
+			    </foreach>
+		    	,brand_name =
+			    <foreach collection="list" index="index" item="item" separator=" " open="case id" close="end">
+			        when #{item.id} then #{item.brandName}
+			    </foreach>
+		    	,brand_show_map =
+			    <foreach collection="list" index="index" item="item" separator=" " open="case id" close="end">
+			        when #{item.id} then #{item.brandShowMap}
+			    </foreach>
+		    	,operator =
+			    <foreach collection="list" index="index" item="item" separator=" " open="case id" close="end">
+			        when #{item.id} then #{item.operator}
+			    </foreach>
+		    	,update_time =
+			    <foreach collection="list" index="index" item="item" separator=" " open="case id" close="end">
+			        when #{item.id} then #{item.updateTime}
+			    </foreach>
+		WHERE id IN
+			 <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+			        #{item.id}
+			 </foreach>
+    </update>
+        
+</mapper>
