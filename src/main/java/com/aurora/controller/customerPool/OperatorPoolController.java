@@ -34,7 +34,7 @@ public class OperatorPoolController extends BaseController {
 
 	/**
 	 * 运营池页面;
-	 *
+	 * @author SSY 2018-06-28
 	 * @param  page,name,phone,salesmanID(销售人员id),orderAD(降序"DESC",升序"ASC"),orderBY(购买金额1,分配时间2)
 	 * @return
 	 */
